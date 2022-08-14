@@ -1,0 +1,13 @@
+[versions]
+kotlinx-serialization = "1.3.3"
+
+[libraries]
+# kotlinx-serialization
+kotlinx-serialization-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+kotlinx-serialization-hocon = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-hocon", version.ref = "kotlinx-serialization" }
+kotlinx-serialization-protobuf = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-protobuf", version.ref = "kotlinx-serialization" }
+kotlinx-serialization-cbor = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-cbor", version.ref = "kotlinx-serialization" }
+kotlinx-serialization-properties = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-properties", version.ref = "kotlinx-serialization" }
+charleskorn-kaml = "com.charleskorn.kaml:kaml:0.46.0"
+
