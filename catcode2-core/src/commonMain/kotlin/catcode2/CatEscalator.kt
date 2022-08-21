@@ -77,7 +77,7 @@ public object CatEscalator {
         "&#13;" to '\n',
     )
     
-    private val TEXT_DECODE_CODE_VALUE_MAP: Map<Long, Char> = mapOf(
+    private val TEXT_DECODE_CODE_VALUE_MAP = LongCharMap(
         "91".toKeyValue() to '[',
         "93".toKeyValue() to ']',
         "09".toKeyValue() to '\t',
@@ -85,7 +85,7 @@ public object CatEscalator {
         "13".toKeyValue() to '\n',
     )
     
-    private val PARAM_DECODE_CODE_VALUE_MAP = mapOf(
+    private val PARAM_DECODE_CODE_VALUE_MAP = LongCharMap(
         "91".toKeyValue() to '[',
         "93".toKeyValue() to ']',
         "61".toKeyValue() to '=',
@@ -125,13 +125,8 @@ public object CatEscalator {
      */
     public fun getParamDecode(value: String): Char? = PARAM_DECODE_MAP[value]
     
-    private fun getTextDecodeByCodeValue(code: Long): Char {
-        return TEXT_DECODE_CODE_VALUE_MAP[code] ?: Char.MIN_VALUE
-    }
-    
-    private fun getParamDecodeByCodeValue(code: Long): Char {
-        return PARAM_DECODE_CODE_VALUE_MAP[code] ?: Char.MIN_VALUE
-    }
+    private fun getTextDecodeByCodeValue(code: Long): Char = TEXT_DECODE_CODE_VALUE_MAP[code]
+    private fun getParamDecodeByCodeValue(code: Long): Char = PARAM_DECODE_CODE_VALUE_MAP[code]
     
     
     /**
@@ -189,9 +184,9 @@ public object CatEscalator {
                 append(text, preIndex, text.length)
                 break
             }
-    
+            
             next = sufIndex + 1
-    
+            
             if (text[sufIndex] == DECODE_SUFFIX) {
                 val c1 = text[preIndex + 1]
                 val c2 = text[preIndex + 2]
@@ -232,4 +227,87 @@ public object CatEscalator {
      */
     public fun decodeParam(text: String): String = decode(text, ::getParamDecodeByCodeValue)
     
+}
+
+
+/**
+ * 固定容量不可扩容的基础类型 (key: [Long], value: [Char]) 哈希表。
+ * [LongCharMap] 用于降低内存占用，键值对都使用基本数据类型来避免拆/装箱（例如JVM平台上）
+ *
+ * 对于键与值的定位与存放使用开放寻址的方式。
+ *
+ * 此表固定大小，仅可用于 [获取][get]，键值对从一开始便被确定。
+ *
+ * 其中, 存放的 value char 的 [Char.code] 不可为 [Char.MIN_VALUE] —— `Char(0)` 将会用于标记为'未应用'，作用同 `null`。
+ *
+ */
+private class LongCharMap(
+    vararg pairs: Pair<Long, Char>,
+    /**
+     * 代表用于标记'未应用'状态的值。
+     */
+    private val unusedValue: Char = Char.MIN_VALUE,
+) {
+    
+    private val keys = LongArray(pairs.size)
+    private val values = CharArray(pairs.size)
+    
+    private inline fun Char.isUnused(): Boolean = this == unusedValue
+    
+    init {
+        fun put(key: Long, value: Char) {
+            val startIndex = hashIndex(key)
+            var index = startIndex
+            while (true) {
+                if (values[index].isUnused()) {
+                    // maybe nothing here, set value.
+                    keys[index] = key
+                    values[index] = value
+                    break
+                }
+                
+                if (keys[index] == key) {
+                    throw IllegalArgumentException("Duplicate key $key")
+                }
+                
+                index = probeNext(index)
+                if (index == startIndex) {
+                    throw IllegalStateException("Unable to insert")
+                }
+            }
+        }
+        
+        pairs.forEach { (k, v) ->
+            put(k, v)
+        }
+    }
+    
+    private fun hashIndex(key: Long): Int {
+        return ((key % keys.size + keys.size) % keys.size).toInt()
+    }
+    
+    private fun probeNext(index: Int): Int {
+        return if (index == keys.lastIndex) 0 else index + 1
+    }
+    
+    operator fun get(key: Long): Char {
+        val startIndex = hashIndex(key)
+        var index = startIndex
+        while (true) {
+            val value = values[index]
+            if (value.isUnused()) {
+                return unusedValue
+            }
+            
+            val gotKey = keys[index]
+            if (gotKey == key) {
+                return values[index]
+            }
+            
+            index = probeNext(index)
+            if (index == startIndex) {
+                return unusedValue
+            }
+        }
+    }
 }
