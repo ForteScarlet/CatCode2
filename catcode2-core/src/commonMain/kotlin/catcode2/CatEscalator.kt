@@ -248,6 +248,9 @@ private class LongCharMap(
      */
     private val unusedValue: Char = Char.MIN_VALUE,
 ) {
+    /*
+        实际上只是想写着玩，并不会节省多少内存。
+     */
     
     private val keys = LongArray(pairs.size)
     private val values = CharArray(pairs.size)
