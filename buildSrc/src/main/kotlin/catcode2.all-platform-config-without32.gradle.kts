@@ -29,8 +29,9 @@ kotlin {
     }
     
     js(BOTH) {
-        nodejs()
         browser()
+        nodejs()
+        useCommonJs()
     }
     
     

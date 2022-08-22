@@ -1,4 +1,6 @@
-package catcode2
+package catcode2.cat
+
+import kotlin.js.JsName
 
 
 /**
@@ -33,6 +35,14 @@ package catcode2
 public interface Cat {
     
     /**
+     * 当前猫猫码的头类型。即 `[HEAD:type,p=v]` 中的 `HEAD`。
+     *
+     * 通常来讲，解析而得的 [Cat] 中 [head] 为解析目标的具体头类型，
+     * 而手动构建的 [Cat] 中 [head] 如未指定则默认为 [CAT_HEAD]。
+     */
+    public val head: String
+    
+    /**
      * 当前猫猫码的类型。即 `[CAT:type,p=v]` 中的 `type`。
      */
     public val type: String
@@ -41,7 +51,8 @@ public interface Cat {
      * 提供一个 `head` 并得到当前猫猫码。
      *
      */
-    public fun toString(head: String = CAT_HEAD): String
+    @JsName("toStringWithHead")
+    public fun toString(head: String = this.head): String
     
     /**
      * 得到当前猫猫码。
@@ -52,6 +63,7 @@ public interface Cat {
     /**
      * 根据键获取对应的值。如果未寻得则得到null。
      */
+    @JsName("get")
     public operator fun get(key: String): String?
     
     /**

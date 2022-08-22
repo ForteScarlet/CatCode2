@@ -1,6 +1,7 @@
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.kotlin
 import org.gradle.kotlin.dsl.repositories
+import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile
 
 plugins {
     kotlin("multiplatform")
@@ -29,8 +30,9 @@ kotlin {
     }
     
     js(BOTH) {
-        nodejs()
         browser()
+        nodejs()
+        useCommonJs()
     }
     
     
@@ -100,3 +102,8 @@ kotlin {
         
     }
 }
+
+//
+// tasks.named<KotlinJsCompile>("compileKotlinJs").configure {
+//     kotlinOptions.moduleKind = "commonjs"
+// }

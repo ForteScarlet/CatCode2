@@ -1,5 +1,6 @@
 package catcode2
 
+import kotlin.js.JsName
 import kotlin.jvm.JvmStatic
 
 
@@ -110,25 +111,25 @@ public object CatEscalator {
     /**
      * 根据指定字符，得到它应当被转义为的结果。如果无需转义则得到null。
      */
-    @JvmStatic
+    @JvmStatic @JsName("getTextEncode")
     public fun getTextEncode(value: Char): String? = TEXT_ENCODE_MAP[value]
     
     /**
      * 根据指定字符串，得到它转义前的结果。如果无需转义则得到null。
      */
-    @JvmStatic
+    @JvmStatic @JsName("getTextDecode")
     public fun getTextDecode(value: String): Char? = TEXT_DECODE_MAP[value]
     
     /**
      * 根据指定字符，得到它应当被转义为的结果。如果无需转义则得到null。
      */
-    @JvmStatic
+    @JvmStatic @JsName("getParamEncode")
     public fun getParamEncode(value: Char): String? = PARAM_ENCODE_MAP[value]
     
     /**
      * 根据指定字符串，得到它转义前的结果。如果无需转义则得到null。
      */
-    @JvmStatic
+    @JvmStatic @JsName("getParamDecode")
     public fun getParamDecode(value: String): Char? = PARAM_DECODE_MAP[value]
     
     private fun getTextDecodeByCodeValue(code: Long): Char = TEXT_DECODE_CODE_VALUE_MAP[code]
@@ -274,14 +275,14 @@ private class LongCharMap(
     private val keys = LongArray(pairs.size)
     private val values = CharArray(pairs.size)
     
-    private inline fun Char.isUnused(): Boolean = this == unusedValue
+    private inline val Char.isUnused: Boolean get() = this == unusedValue
     
     init {
         fun put(key: Long, value: Char) {
             val startIndex = hashIndex(key)
             var index = startIndex
             while (true) {
-                if (values[index].isUnused()) {
+                if (values[index].isUnused) {
                     // maybe nothing here, set value.
                     keys[index] = key
                     values[index] = value
@@ -317,7 +318,7 @@ private class LongCharMap(
         var index = startIndex
         while (true) {
             val value = values[index]
-            if (value.isUnused()) {
+            if (value.isUnused) {
                 return unusedValue
             }
             
