@@ -58,7 +58,8 @@ kotlin {
     
     
     sourceSets {
-        getByName("commonTest") {
+        val commonMain by getting
+        val commonTest by getting {
             dependencies {
                 implementation(kotlin("test"))
             }
@@ -70,10 +71,10 @@ kotlin {
         }
         
         val nativeCommonMain = create("nativeCommonMain") {
-        
+            dependsOn(commonMain)
         }
         val nativeCommonTest = create("nativeCommonTest") {
-        
+            dependsOn(commonTest)
         }
         val notIn = setOf(
             "commonMain", "commonTest",
