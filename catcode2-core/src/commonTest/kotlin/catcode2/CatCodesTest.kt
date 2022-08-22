@@ -1,7 +1,5 @@
-package catcode
+package catcode2
 
-import catcode2.requireCatCode
-import catcode2.walkCatCode
 import kotlin.test.Test
 import kotlin.test.assertTrue
 

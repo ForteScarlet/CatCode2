@@ -1,6 +1,5 @@
-package catcode
+package catcode2
 
-import catcode2.CatEscalator
 import kotlin.test.Test
 import kotlin.test.assertTrue
 

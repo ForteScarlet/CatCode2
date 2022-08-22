@@ -46,8 +46,6 @@ public const val CAT_PROPERTIES_SEPARATOR: Char = ','
 public const val CAT_PROPERTY_SEPARATOR: Char = '='
 
 
-
-
 // [HEAD:type,a=b,c=d]
 @Suppress("RegExpRedundantEscape") // '\\]' for nodejs.
 private val CHECK_REGEX = Regex("\\[[a-zA-Z_.$]+:[a-zA-Z_.$]+(,.+=.*)*\\]")
@@ -96,8 +94,8 @@ public inline fun walkCatCode(
     codeValue: String,
     perceiveHead: (String) -> Unit,
     perceiveType: (String) -> Unit,
-    perceiveProperty: (key: String, value: String) -> Unit
-    ) {
+    perceiveProperty: (key: String, value: String) -> Unit,
+) {
     contract {
         callsInPlace(perceiveHead, InvocationKind.AT_MOST_ONCE)
         callsInPlace(perceiveType, InvocationKind.AT_MOST_ONCE)
@@ -125,6 +123,7 @@ public inline fun walkCatCode(
             }
             typeEndIndex = lastIndex
         }
+        
         typeEndIndex - 1 == headEndIndex -> throw IllegalArgumentException("codeValue '$codeValue' is not a catcode: type is empty before cat properties separator '$CAT_PROPERTIES_SEPARATOR'")
     }
     
@@ -149,8 +148,12 @@ public inline fun walkCatCode(
  * @throws IllegalArgumentException 当 [codeValue] 不是被 [`[`][CAT_PREFIX] 和 [`]`][CAT_SUFFIX] 前后包裹时。
  * @throws IllegalArgumentException 当一个属性切割符 [CAT_PROPERTIES_SEPARATOR] 后面无法寻得有效键值对（缺少键值切割符 [CAT_PROPERTY_SEPARATOR] 时）
  */
-@JvmSynthetic
+@OptIn(ExperimentalContracts::class)
 public inline fun walkCatCodePropertiesInlineLoosely(codeValue: String, walk: (key: String, value: String) -> Unit) {
+    contract {
+        callsInPlace(walk, InvocationKind.UNKNOWN)
+    }
+    
     if (!checkCatCodeLoosely(codeValue)) throw IllegalArgumentException("codeValue '$codeValue' is not a catcode: Not wrapped by '$CAT_PREFIX' and '$CAT_SUFFIX' or length < 5")
     
     walkCatCodePropertiesInlineLoosely0(codeValue.indexOf(CAT_PROPERTIES_SEPARATOR), codeValue, walk)
@@ -158,7 +161,17 @@ public inline fun walkCatCodePropertiesInlineLoosely(codeValue: String, walk: (k
 
 
 @PublishedApi
-internal inline fun walkCatCodePropertiesInlineLoosely0(startIndex0: Int, codeValue: String, walk: (key: String, value: String) -> Unit) {
+@JvmSynthetic
+@OptIn(ExperimentalContracts::class)
+internal inline fun walkCatCodePropertiesInlineLoosely0(
+    startIndex0: Int,
+    codeValue: String,
+    walk: (key: String, value: String) -> Unit,
+) {
+    contract {
+        callsInPlace(walk, InvocationKind.UNKNOWN)
+    }
+    
     val lastIndex = codeValue.lastIndex
     
     var startIndex = startIndex0 // codeValue.indexOf(CAT_PROPERTIES_SEPARATOR)
