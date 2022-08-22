@@ -15,6 +15,19 @@ package catcode2
  * [CAT:user,name=forte]
  * ```
  *
+ * ### HEAD
+ *
+ * 猫猫码的头标识，位于起始位置，只能为英文字母，区分大小写 (a-z, A-Z)。
+ *
+ * ### type
+ *
+ * 在 `HEAD` 后跟随一个英文冒号 `:`, 而后跟随此猫猫码所代表的 '类型'，只能为英文字母，区分大小写 (a-z, A-Z)。
+ *
+ * ### properties
+ *
+ * 如果存在键值对，在 `type` 后跟随一个英文逗号 `,`，而后为属性键值对
+ *
+ *
  * @author ForteScarlet
  */
 public interface Cat {

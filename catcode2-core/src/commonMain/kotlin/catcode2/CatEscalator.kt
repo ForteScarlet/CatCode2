@@ -1,5 +1,7 @@
 package catcode2
 
+import kotlin.jvm.JvmStatic
+
 
 /**
  * 猫猫码特殊字符转义器。
@@ -108,21 +110,25 @@ public object CatEscalator {
     /**
      * 根据指定字符，得到它应当被转义为的结果。如果无需转义则得到null。
      */
+    @JvmStatic
     public fun getTextEncode(value: Char): String? = TEXT_ENCODE_MAP[value]
     
     /**
      * 根据指定字符串，得到它转义前的结果。如果无需转义则得到null。
      */
+    @JvmStatic
     public fun getTextDecode(value: String): Char? = TEXT_DECODE_MAP[value]
     
     /**
      * 根据指定字符，得到它应当被转义为的结果。如果无需转义则得到null。
      */
+    @JvmStatic
     public fun getParamEncode(value: Char): String? = PARAM_ENCODE_MAP[value]
     
     /**
      * 根据指定字符串，得到它转义前的结果。如果无需转义则得到null。
      */
+    @JvmStatic
     public fun getParamDecode(value: String): Char? = PARAM_DECODE_MAP[value]
     
     private fun getTextDecodeByCodeValue(code: Long): Char = TEXT_DECODE_CODE_VALUE_MAP[code]
@@ -149,6 +155,7 @@ public object CatEscalator {
     /**
      * 将 [text] 根据转义标准进行转义，例如将 `&` 被转义为 `&amp;`。
      */
+    @JvmStatic
     public fun encodeText(text: String): String = buildString(text.length) {
         walkEncoded(text, ::getTextEncode, ::append)
     }
@@ -156,14 +163,21 @@ public object CatEscalator {
     /**
      * 将 [text] 根据转义标准进行转义，例如将 `&` 被转义为 `&amp;`。
      */
+    @JvmStatic
     public fun encodeParam(text: String): String = buildString(text.length) {
         walkEncoded(text, ::getParamEncode, ::append)
     }
     
+    private inline fun String.walk(startIndex: Int, endIndex: Int, walk: (Char) -> Unit) {
+        for (i in startIndex until endIndex) {
+            walk(this[i])
+        }
+    }
+    
     /**
-     * 将 [text] 转为转义前的内容, 例如将 `&amp;` 转为 `&`。
+     * 依次遍历 [text] 转为转义前的内容, 例如将 `&amp;` 转为 `&`。
      */
-    private inline fun decode(text: String, decodeGetter: (Long) -> Char): String = buildString(text.length) {
+    private inline fun walkDecoded(text: String, decodeGetter: (Long) -> Char, walk: (Char) -> Unit) {
         val lastIndex = text.lastIndex
         var next = 0
         while (next <= lastIndex) {
@@ -171,17 +185,17 @@ public object CatEscalator {
             val preIndex = text.indexOf(DECODE_PREFIX, next)
             if (preIndex < 0) {
                 // no more.
-                append(text, next, text.length)
+                text.walk(next, text.length, walk)
                 break
             }
             
-            append(text, next, preIndex)
+            text.walk(next, preIndex, walk)
             
             // ;
             val sufIndex = preIndex + 4
             // the last
             if (sufIndex > lastIndex) {
-                append(text, preIndex, text.length)
+                text.walk(preIndex, text.length, walk)
                 break
             }
             
@@ -199,7 +213,7 @@ public object CatEscalator {
                     val target = decodeGetter(toKeyValue(c2, c3))
                     if (target != Char.MIN_VALUE) {
                         // decoded, append it.
-                        append(target)
+                        walk(target)
                         continue
                     }
                 }
@@ -207,25 +221,29 @@ public object CatEscalator {
                 // &amp;
                 if (c1 == 'a' && c2 == 'm' && c3 == 'p') {
                     // append '&'
-                    append(AND_VALUE)
+                    walk(AND_VALUE)
                     continue
                 }
             }
             
             // just append.
-            append(text, preIndex, sufIndex)
+            text.walk(preIndex, sufIndex, walk)
         }
     }
     
     /**
      * 将 [text] 转为转义前的内容, 例如将 `&amp;` 转为 `&`。
      */
-    public fun decodeText(text: String): String = decode(text, ::getTextDecodeByCodeValue)
+    @JvmStatic
+    public fun decodeText(text: String): String =
+        buildString(text.length) { walkDecoded(text, ::getTextDecodeByCodeValue, ::append) }
     
     /**
      * 将 [text] 转为转义前的内容, 例如将 `&amp;` 转为 `&`。
      */
-    public fun decodeParam(text: String): String = decode(text, ::getParamDecodeByCodeValue)
+    @JvmStatic
+    public fun decodeParam(text: String): String =
+        buildString(text.length) { walkDecoded(text, ::getParamDecodeByCodeValue, ::append) }
     
 }
 
@@ -249,7 +267,8 @@ private class LongCharMap(
     private val unusedValue: Char = Char.MIN_VALUE,
 ) {
     /*
-        实际上只是想写着玩，并不会节省多少内存。
+        实际上只是想写着玩，这种场景下并不会节省多少内存，大概。
+        效率？也许会高，也许不会。最多不超过10个键值对，又如何呢
      */
     
     private val keys = LongArray(pairs.size)

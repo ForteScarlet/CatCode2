@@ -54,9 +54,9 @@ kotlin {
     macosArm64()
     linuxArm64()
     linuxArm32Hfp()
-    linuxMips32()
-    linuxMipsel32()
-    wasm32()
+    // linuxMips32()
+    // linuxMipsel32()
+    // wasm32()
     // endregion
     
     
