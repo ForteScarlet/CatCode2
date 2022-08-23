@@ -18,6 +18,7 @@ kotlin {
         getByName("commonTest") {
             dependencies {
                 implementation(libs.kotlinx.serialization.json)
+                implementation(libs.kotlinx.serialization.properties)
             }
         }
     }
