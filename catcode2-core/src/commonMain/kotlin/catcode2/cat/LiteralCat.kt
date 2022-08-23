@@ -196,12 +196,6 @@ public class CatBuilder private constructor(private val head: String, private va
 
 
 /**
- * set([key], [value], true)
- */
-public operator fun CatBuilder.set(key: String, value: String): CatBuilder = set(key, value, true)
-
-
-/**
  * 构建一个 catcode.
  */
 private fun catOrBuilder(

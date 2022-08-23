@@ -1,5 +1,7 @@
 package catcode2.cat
 
+import kotlin.js.JsName
+
 
 /**
  * 对不同类型的 catcode 构建器的统一接口。
@@ -30,6 +32,7 @@ public interface BaseCatBuilder<out C, out Builder : BaseCatBuilder<C, Builder>>
      * }
      * ```
      */
+    @JsName("set")
     public fun set(key: String, value: String, encode: Boolean = true): Builder
     
     /**
@@ -42,7 +45,7 @@ public interface BaseCatBuilder<out C, out Builder : BaseCatBuilder<C, Builder>>
      * }
      * ```
      */
-    public fun set(key: String, value: String): Builder = set(key, value, true)
+    public operator fun set(key: String, value: String): Builder = set(key, value, true)
     
     /**
      * 提供一个 [key] 并得到此key的 [KeyHandle]。
@@ -56,6 +59,7 @@ public interface BaseCatBuilder<out C, out Builder : BaseCatBuilder<C, Builder>>
      *
      * @see KeyHandle
      */
+    @JsName("key")
     public fun key(key: String): KeyHandle<C, Builder>
     
     /**
@@ -80,6 +84,7 @@ public interface BaseCatBuilder<out C, out Builder : BaseCatBuilder<C, Builder>>
          *
          * @param encode 是否对 [value] 进行转义，默认为true
          */
+        @JsName("value")
         public fun value(value: String?, encode: Boolean = true): Builder
         
         /**
@@ -91,6 +96,7 @@ public interface BaseCatBuilder<out C, out Builder : BaseCatBuilder<C, Builder>>
     /**
      * 构建并得到结果。
      */
+    @JsName("build")
     public fun build(): C
     
 }

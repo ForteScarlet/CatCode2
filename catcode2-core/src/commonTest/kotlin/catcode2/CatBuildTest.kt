@@ -28,9 +28,9 @@ class CatBuildTest {
         println(cat1.toString("CQ"))
         
         val cat2 = buildCat("at") {
-            "display" - "@forte"
-            "name" - "forliy"
-            "code" - "123"
+            this["display"] = "@forte"
+            this["name"] = "forliy"
+            set("code", "123", false)
         }
         
         assertTrue { cat1 == cat2 }
@@ -38,7 +38,7 @@ class CatBuildTest {
         val cat3 = buildCat("at") {
             key("display") value "@forte"
             key("name") value "forliy"
-            key("code") value "123"
+            key("code").value("123", false)
         }
         
         assertTrue { cat1 == cat3 }
