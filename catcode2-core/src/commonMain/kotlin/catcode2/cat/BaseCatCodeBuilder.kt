@@ -7,7 +7,7 @@ import kotlin.js.JsName
  * 对不同类型的 catcode 构建器的统一接口。
  * @author ForteScarlet
  */
-public interface BaseCatBuilder<out C, out Builder : BaseCatBuilder<C, Builder>> {
+public interface BaseCatCodeBuilder<out C, out Builder : BaseCatCodeBuilder<C, Builder>> {
     
     /**
      * 直接设置一个键值对。
@@ -63,9 +63,9 @@ public interface BaseCatBuilder<out C, out Builder : BaseCatBuilder<C, Builder>>
     public fun key(key: String): KeyHandle<C, Builder>
     
     /**
-     * 通过 [CatBuilder.key] 得到对, 指定的key指设置结果。
+     * 通过 [CatCodeBuilder.key] 得到对, 指定的key指设置结果。
      *
-     * [CatBuilder.key] 与 [KeyHandle] 不可交叉使用，否则可能会导致预期外的结果。
+     * [CatCodeBuilder.key] 与 [KeyHandle] 不可交叉使用，否则可能会导致预期外的结果。
      * 当使用 [key] 与 [KeyHandle] 时，需要保证至少是一一对应的，例如：
      *
      * ```kotlin
@@ -75,7 +75,7 @@ public interface BaseCatBuilder<out C, out Builder : BaseCatBuilder<C, Builder>>
      *
      *
      */
-    public interface KeyHandle<out C, out Builder : BaseCatBuilder<C, Builder>> {
+    public interface KeyHandle<out C, out Builder : BaseCatCodeBuilder<C, Builder>> {
         /**
          * 为当前key设置一个value。如果 [value] 为null则跳过本次设置。
          *

@@ -91,19 +91,19 @@ public fun catOf(codeValue: String): Cat {
 
 
 /**
- * 通过 [CatBuilder] 构建一个 [Cat] 实例。
+ * 通过 [CatCodeBuilder] 构建一个 [Cat] 实例。
  *
  */
-public inline fun buildCat(type: String, head: String = CAT_HEAD, block: CatBuilder.() -> Unit): Cat {
-    return CatBuilder.of(type = type, head = head).apply(block).build()
+public inline fun buildCat(type: String, head: String = CAT_HEAD, block: CatCodeBuilder.() -> Unit): Cat {
+    return CatCodeBuilder.of(type = type, head = head).apply(block).build()
 }
 
 
 /**
  * [Cat] 的构建器。
  */
-public class CatBuilder private constructor(private val head: String, private val type: String) :
-    BaseCatBuilder<Cat, CatBuilder> {
+public class CatCodeBuilder private constructor(private val head: String, private val type: String) :
+    BaseCatCodeBuilder<Cat, CatCodeBuilder> {
     private val properties = mutableMapOf<String, String>()
     private lateinit var currentKey: String
     private lateinit var handle: KeyHandleImpl
@@ -118,7 +118,7 @@ public class CatBuilder private constructor(private val head: String, private va
      * }
      * ```
      */
-    override fun set(key: String, value: String, encode: Boolean): CatBuilder = apply {
+    override fun set(key: String, value: String, encode: Boolean): CatCodeBuilder = apply {
         properties[key] = if (encode) CatEscalator.encodeParam(value) else value
     }
     
@@ -144,9 +144,9 @@ public class CatBuilder private constructor(private val head: String, private va
     
     
     /**
-     * 通过 [CatBuilder.key] 得到对, 指定的key指设置结果。
+     * 通过 [CatCodeBuilder.key] 得到对, 指定的key指设置结果。
      *
-     * [CatBuilder.key] 与 [KeyHandle] 不可交叉使用，否则可能会导致预期外的结果。
+     * [CatCodeBuilder.key] 与 [KeyHandle] 不可交叉使用，否则可能会导致预期外的结果。
      * 当使用 [key] 与 [KeyHandle] 时，需要保证至少是一一对应的，例如：
      *
      * ```kotlin
@@ -156,7 +156,7 @@ public class CatBuilder private constructor(private val head: String, private va
      *
      *
      */
-    public interface KeyHandle : BaseCatBuilder.KeyHandle<Cat, CatBuilder> {
+    public interface KeyHandle : BaseCatCodeBuilder.KeyHandle<Cat, CatCodeBuilder> {
         /**
          * 为当前key设置一个value。如果 [value] 为null则跳过本次设置。
          *
@@ -165,17 +165,17 @@ public class CatBuilder private constructor(private val head: String, private va
          *
          * @param encode 是否对 [value] 进行转义，默认为true
          */
-        override fun value(value: String?, encode: Boolean): CatBuilder
+        override fun value(value: String?, encode: Boolean): CatCodeBuilder
     }
     
     
     private inner class KeyHandleImpl : KeyHandle {
-        override fun value(value: String?, encode: Boolean): CatBuilder {
+        override fun value(value: String?, encode: Boolean): CatCodeBuilder {
             val key = currentKey
             if (value != null) {
                 set(key, value, encode)
             }
-            return this@CatBuilder
+            return this@CatCodeBuilder
         }
     }
     
@@ -183,13 +183,13 @@ public class CatBuilder private constructor(private val head: String, private va
     
     public companion object {
         /**
-         * 创建一个 [CatBuilder]。
+         * 创建一个 [CatCodeBuilder]。
          */
         @JvmStatic
         @JvmOverloads
         @JsName("of")
-        public fun of(type: String, head: String = CAT_HEAD): CatBuilder {
-            return CatBuilder(head, type)
+        public fun of(type: String, head: String = CAT_HEAD): CatCodeBuilder {
+            return CatCodeBuilder(head, type)
         }
     }
 }

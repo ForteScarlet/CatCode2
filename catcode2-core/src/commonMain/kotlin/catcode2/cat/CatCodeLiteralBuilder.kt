@@ -11,7 +11,7 @@ import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic
 
 /**
- * 通过 [CatLiteralBuilder] 构建一个catcode字符串。
+ * 通过 [CatCodeLiteralBuilder] 构建一个catcode字符串。
  */
 @JvmOverloads
 @JsName("buildCatLiteral")
@@ -19,9 +19,9 @@ public inline fun buildCatLiteral(
     type: String,
     head: String = CAT_HEAD,
     appendable: Appendable = StringBuilder(),
-    block: CatLiteralBuilder.() -> Unit,
+    block: CatCodeLiteralBuilder.() -> Unit,
 ): String {
-    return CatLiteralBuilder.of(type, head, appendable).apply(block).build()
+    return CatCodeLiteralBuilder.of(type, head, appendable).apply(block).build()
 }
 
 
@@ -30,13 +30,13 @@ public inline fun buildCatLiteral(
  *
  * @author ForteScarlet
  */
-public class CatLiteralBuilder private constructor(private val appendable: Appendable) :
-    BaseCatBuilder<String, CatLiteralBuilder> {
+public class CatCodeLiteralBuilder private constructor(private val appendable: Appendable) :
+    BaseCatCodeBuilder<String, CatCodeLiteralBuilder> {
     private var finished = false
     private lateinit var currentKey: String
     private lateinit var handle: KeyHandle
     
-    override fun set(key: String, value: String, encode: Boolean): CatLiteralBuilder = apply {
+    override fun set(key: String, value: String, encode: Boolean): CatCodeLiteralBuilder = apply {
         checkFinish()
         appendable.append(CAT_PROPERTIES_SEPARATOR).append(key).append(CAT_PROPERTY_SEPARATOR)
         appendable.append(if (encode) CatEscalator.encodeParam(value) else value)
@@ -53,9 +53,9 @@ public class CatLiteralBuilder private constructor(private val appendable: Appen
     
     
     /**
-     * 通过 [CatBuilder.key] 得到对, 指定的key指设置结果。
+     * 通过 [CatCodeBuilder.key] 得到对, 指定的key指设置结果。
      *
-     * [CatBuilder.key] 与 [KeyHandle] 不可交叉使用，否则可能会导致预期外的结果。
+     * [CatCodeBuilder.key] 与 [KeyHandle] 不可交叉使用，否则可能会导致预期外的结果。
      * 当使用 [key] 与 [KeyHandle] 时，需要保证至少是一一对应的，例如：
      *
      * ```kotlin
@@ -65,7 +65,7 @@ public class CatLiteralBuilder private constructor(private val appendable: Appen
      *
      *
      */
-    public interface KeyHandle : BaseCatBuilder.KeyHandle<String, CatLiteralBuilder> {
+    public interface KeyHandle : BaseCatCodeBuilder.KeyHandle<String, CatCodeLiteralBuilder> {
         /**
          * 为当前key设置一个value。如果 [value] 为null则跳过本次设置。
          *
@@ -74,16 +74,16 @@ public class CatLiteralBuilder private constructor(private val appendable: Appen
          *
          * @param encode 是否对 [value] 进行转义，默认为true
          */
-        override fun value(value: String?, encode: Boolean): CatLiteralBuilder
+        override fun value(value: String?, encode: Boolean): CatCodeLiteralBuilder
     }
     
     private inner class KeyHandleImpl : KeyHandle {
-        override fun value(value: String?, encode: Boolean): CatLiteralBuilder {
+        override fun value(value: String?, encode: Boolean): CatCodeLiteralBuilder {
             val key = currentKey
             if (value != null) {
                 set(key, value, encode)
             }
-            return this@CatLiteralBuilder
+            return this@CatCodeLiteralBuilder
         }
     }
     
@@ -105,17 +105,17 @@ public class CatLiteralBuilder private constructor(private val appendable: Appen
     public companion object {
         
         /**
-         * 直接构建一个 [CatLiteralBuilder]。
+         * 直接构建一个 [CatCodeLiteralBuilder]。
          */
         @JvmStatic
         @JsName("of")
         @JvmOverloads
-        public fun of(type: String, head: String = CAT_HEAD): CatLiteralBuilder =
-            CatLiteralBuilder(StringBuilder().initAppendable(head, type))
+        public fun of(type: String, head: String = CAT_HEAD): CatCodeLiteralBuilder =
+            CatCodeLiteralBuilder(StringBuilder().initAppendable(head, type))
         
         
         /**
-         * 通过 [appendable] 构建一个 [CatLiteralBuilder]。
+         * 通过 [appendable] 构建一个 [CatCodeLiteralBuilder]。
          */
         @JvmStatic
         @JvmName("of")
@@ -125,18 +125,18 @@ public class CatLiteralBuilder private constructor(private val appendable: Appen
             type: String,
             head: String = CAT_HEAD,
             appendable: Appendable,
-        ): CatLiteralBuilder = CatLiteralBuilder(appendable.initAppendable(head, type))
+        ): CatCodeLiteralBuilder = CatCodeLiteralBuilder(appendable.initAppendable(head, type))
         
         
         /**
-         * 通过提供 [Appendable] 的初始容量 [capacity] 构建一个 [CatLiteralBuilder]。
+         * 通过提供 [Appendable] 的初始容量 [capacity] 构建一个 [CatCodeLiteralBuilder]。
          */
         @JvmStatic
         @JvmName("of")
         @JsName("ofCapacity")
         @JvmOverloads
-        public fun of(type: String, head: String = CAT_HEAD, capacity: Int): CatLiteralBuilder =
-            CatLiteralBuilder(StringBuilder(capacity).initAppendable(head, type))
+        public fun of(type: String, head: String = CAT_HEAD, capacity: Int): CatCodeLiteralBuilder =
+            CatCodeLiteralBuilder(StringBuilder(capacity).initAppendable(head, type))
         
         
         private fun Appendable.initAppendable(head: String, type: String): Appendable = apply {

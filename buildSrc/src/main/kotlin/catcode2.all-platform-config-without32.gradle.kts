@@ -1,7 +1,3 @@
-import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.kotlin
-import org.gradle.kotlin.dsl.repositories
-
 plugins {
     kotlin("multiplatform")
 }
@@ -34,32 +30,7 @@ kotlin {
         useCommonJs()
     }
     
-    
-    // region native target
-    iosArm32()
-    iosArm64()
-    iosX64()
-    iosSimulatorArm64()
-    watchosArm32()
-    watchosArm64()
-    watchosX86()
-    watchosX64()
-    watchosSimulatorArm64()
-    tvosArm64()
-    tvosX64()
-    tvosSimulatorArm64()
-    linuxX64()
-    mingwX86()
-    mingwX64()
-    macosX64()
-    macosArm64()
-    linuxArm64()
-    linuxArm32Hfp()
-    // linuxMips32()
-    // linuxMipsel32()
-    // wasm32()
-    // endregion
-    
+    configureSupportNativePlatforms(true)
     
     sourceSets {
         

@@ -2,7 +2,12 @@ plugins {
     id("catcode2.all-platform-config")
 }
 
-group = "love.forte.catcode2"
-version = "0.0.1"
-
-
+kotlin {
+    sourceSets {
+        getByName("jsTest") {
+            dependencies {
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.0")
+            }
+        }
+    }
+}

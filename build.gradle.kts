@@ -1,5 +1,10 @@
-group = "love.forte.catcode2"
-version = "0.0.1"
+group = Version.group
+version = Version.version
+
+subprojects {
+    group = Version.group
+    version = Version.version
+}
 
 repositories {
     mavenCentral()
