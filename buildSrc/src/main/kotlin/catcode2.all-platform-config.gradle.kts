@@ -71,10 +71,10 @@ kotlin {
                 }
             }
         }
-        
     }
 }
 
+sharedLibsCopyTask()
 
 
 
