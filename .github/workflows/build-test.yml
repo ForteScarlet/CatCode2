@@ -21,6 +21,9 @@ jobs:
       # 检出仓库代码
       - name: Check out repo
         uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+          fetch-depth: 0
 
       # Setup java
       # https://github.com/marketplace/actions/setup-java-jdk
