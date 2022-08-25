@@ -13,9 +13,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
 fun KotlinTargetWithBinaries<*, AbstractKotlinNativeBinaryContainer>.configSharedLib(configure: SharedLibrary.() -> Unit = {}) {
     binaries {
         sharedLib {
-            println("=================================")
-            println("Base Name: $baseName")
-            println("=================================")
             val targetSubDirectory = target.disambiguationClassifier?.let { "$it/" }.orEmpty()
             outputDirectory = project.buildDir.resolve("sharedLibs/$targetSubDirectory${this.name}")
             configure()
