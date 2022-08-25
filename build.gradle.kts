@@ -1,9 +1,12 @@
-group = Version.group
-version = Version.version
+
+val versionValue = if (isRelease()) Version.VERSION else "${Version.VERSION}-SNAPSHOT"
+
+group = Version.GROUP
+version = versionValue
 
 subprojects {
-    group = Version.group
-    version = Version.version
+    group = Version.GROUP
+    version = versionValue
 }
 
 repositories {
