@@ -89,6 +89,19 @@ public fun catOf(codeValue: String): Cat {
     return LiteralCat(codeValue, head, headCoordinate, type, properties)
 }
 
+/**
+ * 提供属性集并构建一个 [Cat]。
+ */
+@JvmName("of")
+@JsName("catOfProperties")
+public fun catOf(type: String, head: String = CAT_HEAD, properties: Map<String, String>): Cat {
+    return buildCat(type, head) {
+        properties.forEach { (k, v) ->
+            set(k, v)
+        }
+    }
+}
+
 
 /**
  * 通过 [CatCodeBuilder] 构建一个 [Cat] 实例。

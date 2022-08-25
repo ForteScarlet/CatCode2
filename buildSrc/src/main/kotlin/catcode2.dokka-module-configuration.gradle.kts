@@ -62,7 +62,6 @@ tasks.withType<DokkaTask>().configureEach {
                 includes.from("Module.md")
             }
             displayName.set(project.name)
-            
             perPackageOption {
                 matchingRegex.set(""".*\.internal.*""") // will match all .internal packages and sub-packages
                 suppress.set(true)
