@@ -1,5 +1,6 @@
 plugins {
     id("catcode2.all-platform-config")
+    id("catcode2.maven-publish")
 }
 
 kotlin {

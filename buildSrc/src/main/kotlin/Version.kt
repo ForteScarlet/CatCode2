@@ -6,11 +6,11 @@ object Version {
 
 
 fun isRelease(): Boolean {
-    if (System.getProperty("catcode2.release")?.toBoolean() == true) {
+    if (System.getProperty("CATCODE2_RELEASE")?.toBoolean() == true) {
         return true
     }
     
-    if (System.getenv("catcode2.release")?.toBoolean() == true) {
+    if (System.getenv("CATCODE2_RELEASE")?.toBoolean() == true) {
         return true
     }
     

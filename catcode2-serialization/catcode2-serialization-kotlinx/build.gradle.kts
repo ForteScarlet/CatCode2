@@ -1,5 +1,6 @@
 plugins {
     id("catcode2.all-platform-config-without32")
+    id("catcode2.maven-publish")
     kotlin("plugin.serialization")
 }
 

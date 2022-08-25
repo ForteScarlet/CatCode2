@@ -13,6 +13,7 @@ env:
   OSSRH_PASSWORD: ${{ secrets.OSS_PASSWORD }}
   GRADLE_OPTS: "-Xmx8G -Xms2G -XX:MaxMetaspaceSize=1G -Dfile.encoding=UTF-8"
 
+
 jobs:
   package:
     name: Test And Build
@@ -80,7 +81,8 @@ jobs:
         with:
           gradle-version: 7.5.1
           arguments: clean build publishToSonatype closeAndReleaseStagingRepository --warning-mode all --info -Porg.gradle.jvmargs="org.gradle.jvmargs=-Xmx4G -Xms4G -XX:MaxMetaspaceSize=512m -Dfile.encoding=UTF-8" -x test
-
+        env:
+          CATCODE2_RELEASE: true
 
   create-release:
     runs-on: ubuntu-latest

@@ -38,6 +38,11 @@ plugins {
     id("io.github.gradle-nexus.publish-plugin")
 }
 
+val versionValue = if (isRelease()) Version.VERSION else "${Version.VERSION}-SNAPSHOT"
+
+group = Version.GROUP
+version = versionValue
+
 val isPublishConfigurable = isPublishConfigurable()
 
 if (!isPublishConfigurable) {
