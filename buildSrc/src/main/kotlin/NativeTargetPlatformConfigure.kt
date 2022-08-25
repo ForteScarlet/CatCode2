@@ -1,4 +1,3 @@
-import gradle.kotlin.dsl.accessors._56d1663cf6fec625a3f24228305cadc2.build
 import org.gradle.api.Project
 import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.tasks.Copy
@@ -14,6 +13,9 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
 fun KotlinTargetWithBinaries<*, AbstractKotlinNativeBinaryContainer>.configSharedLib(configure: SharedLibrary.() -> Unit = {}) {
     binaries {
         sharedLib {
+            println("=================================")
+            println("Base Name: $baseName")
+            println("=================================")
             val targetSubDirectory = target.disambiguationClassifier?.let { "$it/" }.orEmpty()
             outputDirectory = project.buildDir.resolve("sharedLibs/$targetSubDirectory${this.name}")
             configure()
@@ -39,11 +41,12 @@ fun Project.sharedLibsCopyTask() {
             // macos
             include("**.dylib")
             rename { name ->
-                if (name.endsWith(".h")) {
-                    return@rename name
+                val removedPrefixName = name.removePrefix("lib")
+                if (removedPrefixName.endsWith(".h")) {
+                    return@rename removedPrefixName
                 }
                 println("============================")
-                println("rename.name: ${name}")
+                println("rename.name: ${removedPrefixName}")
                 println("nativeLink: ${it}")
                 println("nativeLink.name: ${it.name}")
                 println("nativeLink.debuggable: ${it.binary.debuggable}")
@@ -51,16 +54,16 @@ fun Project.sharedLibsCopyTask() {
                 println("============================")
                 
                 if (targetPlatformName == null) {
-                    return@rename name
+                    return@rename removedPrefixName
                 }
                 
-                val lastIndex = name.indexOfLast { it == '.' }
-                if (lastIndex < 0 || lastIndex == name.lastIndex) {
-                    return@rename name + "_$targetPlatformName"
+                val lastIndex = removedPrefixName.indexOfLast { it == '.' }
+                if (lastIndex < 0 || lastIndex == removedPrefixName.lastIndex) {
+                    return@rename removedPrefixName + "_$targetPlatformName"
                 }
                 
-                val filenameWithoutExtension = name.substring(0, lastIndex)
-                val extension = name.substring(lastIndex)
+                val filenameWithoutExtension = removedPrefixName.substring(0, lastIndex)
+                val extension = removedPrefixName.substring(lastIndex)
                 
                 "${filenameWithoutExtension}_$targetPlatformName$extension"
             }

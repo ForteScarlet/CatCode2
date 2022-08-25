@@ -2,6 +2,13 @@
 name: build and release native distribution
 on: [push]
 
+env:
+#  GPG_KEY_ID: ${{ secrets.SIGN_KEY_ID }}
+#  GPG_SECRET_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+#  GPG_PASSWORD: ${{ secrets.SIGN_PASS }}
+#  OSSRH_USER: ${{ secrets.OSS_USERNAME }}
+#  OSSRH_PASSWORD: ${{ secrets.OSS_PASSWORD }}
+  GRADLE_OPTS: "-Xmx4G -Xms4G -XX:MaxMetaspaceSize=512m -Dfile.encoding=UTF-8"
 
 jobs:
   package:
@@ -23,6 +30,14 @@ jobs:
           distribution: 'temurin'
           java-version: '8'
           cache: 'gradle'
+
+      - name: Create gradle.properties
+        run: |
+          echo "" >> gradle.properties
+          echo "org.gradle.parallel=true" >> gradle.properties
+          echo "org.gradle.workers.max=16" >> gradle.properties
+          echo "org.gradle.daemon=false" >> gradle.properties
+          echo "org.gradle.jvmargs=-Xmx8G -Xms2G -XX:MaxMetaspaceSize=1G -Dfile.encoding=UTF-8" >> gradle.properties
 
       # Gradle
       #      - name: Gradle Wrapper Validation
