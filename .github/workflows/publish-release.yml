@@ -53,7 +53,7 @@ jobs:
             copySharedLibs
             -x test
             -Pkotlin.daemon.jvmargs=-Xmx4g
-            -Porg.gradle.jvmargs=-Xmx8G -Xms2G -XX:MaxMetaspaceSize=1G -Dfile.encoding=UTF-8
+            -Porg.gradle.jvmargs="-Xmx8G -Xms2G -XX:MaxMetaspaceSize=1G -Dfile.encoding=UTF-8"
             -Porg.gradle.workers.max=16
             -Porg.gradle.parallel=true
 
@@ -97,7 +97,7 @@ jobs:
             --info 
             -x test
             -Pkotlin.daemon.jvmargs=-Xmx4g
-            -Porg.gradle.jvmargs=-Xmx8G -Xms4G -XX:MaxMetaspaceSize=1G -Dfile.encoding=UTF-8
+            -Porg.gradle.jvmargs="-Xmx8G -Xms4G -XX:MaxMetaspaceSize=1G -Dfile.encoding=UTF-8"
             -Porg.gradle.workers.max=16
             -Porg.gradle.parallel=true
         env:

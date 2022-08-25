@@ -15,6 +15,7 @@
  *
  */
 
+import org.jetbrains.dokka.gradle.DokkaTask
 import java.net.URL
 
 /*
@@ -48,7 +49,8 @@ repositories {
     }
 }
 
-tasks.withType<org.jetbrains.dokka.gradle.DokkaTaskPartial>().configureEach {
+// tasks.withType<org.jetbrains.dokka.gradle.DokkaTaskPartial>().configureEach {
+tasks.withType<DokkaTask>().configureEach {
     dokkaSourceSets {
         // version = P.Simbot.version.fullVersion(false)
         version = Version.VERSION
