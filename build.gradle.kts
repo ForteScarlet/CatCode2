@@ -1,5 +1,6 @@
 plugins {
     id("catcode2.nexus-publish")
+    id("catcode2.dokka-multi-module")
 }
 
 val versionValue = if (isRelease()) Version.VERSION else "${Version.VERSION}-SNAPSHOT"

@@ -1,6 +1,7 @@
 plugins {
     id("catcode2.all-platform-config-without32")
     id("catcode2.maven-publish")
+    id("catcode2.dokka-module-configuration")
     kotlin("plugin.serialization")
 }
 
