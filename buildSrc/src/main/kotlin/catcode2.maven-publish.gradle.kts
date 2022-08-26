@@ -12,46 +12,48 @@ if (!isPublishConfigurable) {
 if (isPublishConfigurable) {
     val (sonatypeUsername, sonatypePassword) = sonatypeUserInfo
     
-    val jarSources by tasks.registering(Jar::class) {
-        archiveClassifier.set("sources")
-        from(sourceSets["main"].allSource)
-    }
+    // val jarSources by tasks.registering(Jar::class) {
+    //     archiveClassifier.set("sources")
+    //     from(sourceSets["main"].allSource)
+    // }
     
+    // val jarJavadocTask = tasks.register<Jar>(name + "JavadocJar") {
+    //     archiveClassifier.set("javadoc")
+    // }
     val jarJavadoc by tasks.registering(Jar::class) {
         archiveClassifier.set("javadoc")
     }
-    
     publishing {
         publications {
             create<MavenPublication>("catcodeDist") {
-                from(components["java"])
-                artifact(jarSources)
+                // val jarJavadocTask = tasks.register<Jar>(this.name + "JavadocJar") {
+                // val jarJavadocTask = tasks.register<Jar>(this.name + "JavadocJar") {
+                //     archiveClassifier.set("javadoc")
+                // }
+                // from(components["java"])
+                // artifact(jarSources)
                 artifact(jarJavadoc)
                 
                 groupId = project.group.toString()
                 artifactId = project.name
                 version = project.version.toString()
-                
-                println("[publication] - groupId:    $groupId")
-                println("[publication] - artifactId: $artifactId")
-                println("[publication] - version:    $version")
+                description = project.description?.toString() ?: Version.DESCRIPTION
                 
                 pom {
                     show()
-                    
-                    name.set("${project.group}:${project.name}")
-                    description.set(project.description ?: Version.DESCRIPTION)
-                    url.set("https://github.com/ForteScarlet/CatCode2")
+                    name by "${project.group}:${project.name}"
+                    description by (project.description ?: Version.DESCRIPTION)
+                    url by "https://github.com/ForteScarlet/CatCode2"
                     licenses {
                         license {
-                            name.set("MIT License")
-                            url.set("https://mit-license.org/")
+                            name by "MIT License"
+                            url by "https://mit-license.org/"
                         }
                     }
                     scm {
-                        url.set("https://github.com/ForteScarlet/CatCode2")
-                        connection.set("scm:git:https://github.com/ForteScarlet/CatCode2.git")
-                        developerConnection.set("scm:git:ssh://git@github.com/ForteScarlet/CatCode2.git")
+                        url by "https://github.com/ForteScarlet/CatCode2"
+                        connection by "scm:git:https://github.com/ForteScarlet/CatCode2.git"
+                        developerConnection by "scm:git:ssh://git@github.com/ForteScarlet/CatCode2.git"
                     }
                     
                     setupDevelopers()
@@ -62,28 +64,35 @@ if (isPublishConfigurable) {
             
             repositories {
                 mavenLocal()
-                if (project.version.toString().contains("SNAPSHOT", true)) {
-                    configPublishMaven(Sonatype.Snapshot, sonatypeUsername, sonatypePassword)
-                } else {
-                    configPublishMaven(Sonatype.Central, sonatypeUsername, sonatypePassword)
-                }
+                // if (project.version.toString().contains("SNAPSHOT", true)) {
+                //     configPublishMaven(Sonatype.Snapshot, sonatypeUsername, sonatypePassword)
+                // } else {
+                //     configPublishMaven(Sonatype.Central, sonatypeUsername, sonatypePassword)
+                // }
             }
+            
+            
         }
+        
     }
     
+    val keyId = prop("GPG_KEY_ID")
+    val secretKey = prop("GPG_SECRET_KEY")
+    val password = prop("GPG_PASSWORD")
+    
     signing {
-        val keyId = System.getenv("GPG_KEY_ID")
-        val secretKey = System.getenv("GPG_SECRET_KEY")
-        val password = System.getenv("GPG_PASSWORD")
-        
-        setRequired {
-            !project.version.toString().endsWith("SNAPSHOT")
-        }
-        
+        // setRequired {
+        //     !project.version.toString().endsWith("SNAPSHOT")
+        // }
         useInMemoryPgpKeys(keyId, secretKey, password)
         
-        sign(publishing.publications["catcodeDist"])
+        // sign(publishing.publications)
+        // sign(catcodeDist)
+        sign(publishing.publications)
     }
+    
+    
+    println("[publishing-configure] - [$name] configured.")
 }
 
 fun RepositoryHandler.configPublishMaven(sonatype: Sonatype, username: String?, password: String?) {
@@ -104,22 +113,25 @@ fun RepositoryHandler.configPublishMaven(sonatype: Sonatype, username: String?, 
 fun MavenPom.setupDevelopers() {
     developers {
         developer {
-            id.set("forte")
-            name.set("ForteScarlet")
-            email.set("ForteScarlet@163.com")
-            url.set("https://github.com/ForteScarlet")
+            id by "forte"
+            name by "ForteScarlet"
+            email by "ForteScarlet@163.com"
+            url by "https://github.com/ForteScarlet"
         }
         developer {
-            id.set("forliy")
-            name.set("ForliyScarlet")
-            email.set("ForliyScarlet@163.com")
-            url.set("https://github.com/ForliyScarlet")
+            id by "forliy"
+            name by "ForliyScarlet"
+            email by "ForliyScarlet@163.com"
+            url by "https://github.com/ForliyScarlet"
         }
     }
 }
 
 inline val Project.sourceSets: SourceSetContainer
     get() = extensions.getByName("sourceSets") as SourceSetContainer
+
+inline val Project.publishing: PublishingExtension
+    get() = extensions.getByType<PublishingExtension>()
 
 fun show() {
     //// show project info

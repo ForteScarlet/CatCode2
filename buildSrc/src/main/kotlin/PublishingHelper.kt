@@ -8,6 +8,8 @@ private val _sonatypeUserInfo: SonatypeUserInfo? by lazy {
     val sonatypeUsername: String? = prop("OSSRH_USER")
     val sonatypePassword: String? = prop("OSSRH_PASSWORD")
     
+    println("sonatypeUsername: $sonatypeUsername")
+    println("sonatypePassword: $sonatypePassword")
     if (sonatypeUsername != null && sonatypePassword != null) {
         SonatypeUserInfo(sonatypeUsername, sonatypePassword)
     } else {
