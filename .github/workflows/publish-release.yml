@@ -64,7 +64,11 @@ jobs:
 
   publish-to-maven:
     name: Publish To Maven
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ macos-latest, ubuntu-latest, windows-latest ]
+    runs-on: ${{ matrix.os }}
+#    runs-on: ubuntu-latest
     needs: package
     steps:
       # 检出仓库代码

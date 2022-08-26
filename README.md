@@ -35,11 +35,12 @@
 - 可以没有参数。
 - 区分大小写。
 
-
 ### **猫猫是严格的。**
 
-为了避免混淆整个存在猫猫码的文本中不允许出现：`[`、`]`、`&` 字符和制表符与换行符，猫猫码文本内中除了上述字符外，还不允许出现`,`与`=`字符。
+为了避免混淆整个存在猫猫码的文本中不允许出现：`[`、`]`、`&`
+字符和制表符与换行符，猫猫码文本内中除了上述字符外，还不允许出现`,`与`=`字符。
 因此，猫猫码的转义规则为：
+
 - `&`  ->  `&amp;`
 - `[`  ->  `&#91;`
 - `]`  ->  `&#93;`
@@ -50,13 +51,66 @@
 - `\t` ->  `&#09;`
 
 ### **猫猫是包容的。**
-任何符合规则 `[HEAD:type,param=value,param=value,...]` 的特殊码均可以视为猫猫码，尽管 `HEAD` 可能并不是 `CAT`。
 
+任何符合规则 `[HEAD:type,param=value,param=value,...]` 的特殊码均可以视为猫猫码，尽管 `HEAD` 可能并不是 `CAT`。
 
 ### **猫猫是无处不在的。**
 
 **CatCode2** 核心库基于 [**Kotlin Multiplatform**](https://kotlinlang.org/docs/multiplatform.html) 支持多平台（JVM、JS、Native），
 并且 **CatCode2** 提供了基于 [**kotlinx-serialization**](https://github.com/Kotlin/kotlinx.serialization) 的多平台序列化模块支持，
 你可以借助 **kotlinx-serialization** 来自定义结构来描述你的猫猫码、序列化/反序列化你的猫猫码。
+
+## 安装
+
+### JVM
+
+**Gradle Groovy**
+
+```groovy
+// 核心库
+implementation 'love.forte.catcode2:catcode2-core:$catcode2_version'
+
+// ktx序列化库
+implementation 'love.forte.catcode2:catcode2-serialization-kotlinx:$catcode2_version'
+```
+
+**Gradle Kotlin DSL**
+
+```kotlin
+// 核心库
+implementation("love.forte.catcode2:catcode2-core:$catcode2_version")
+
+// ktx序列化库
+implementation("love.forte.catcode2:catcode2-serialization-kotlinx:$catcode2_version")
+```
+
+> 在 `Gradle` 中，如果是直接导入而不使用Kotlin，则需要在坐标名候面追加平台后缀，例如 `-jvm`，参考下述 `Maven` 坐标。
+
+**Maven**
+
+```xml
+
+```
+
+### JS
+
+**NPM**
+
+> _目前暂时没有上传到NPM。别问为什么，问就是还没捯饬明白。_
+
+**直接导入**
+
+前往 [releases](https://github.com/ForteScarlet/CatCode2/releases) 
+选择你需要的版本，并在其文件列表中找到你所需要的JS文件，
+例如 `catcode2-catcode2-core.js`。
+
+> _如果你在 [releases](https://github.com/ForteScarlet/CatCode2/releases) 中没有找到你想要的 `*.js` 文件，那么可能就是我忘了上传了。_
+
+### Native
+
+前往 [releases](https://github.com/ForteScarlet/CatCode2/releases)
+选择你需要的版本，并在其文件列表中找到你所需要某平台下的动态链文件和 `.h` 头文件，
+例如 `catcode2_core_mingwX64.dll` 和 `catcode2_core_api.h` 。
+
 
 

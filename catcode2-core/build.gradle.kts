@@ -13,3 +13,5 @@ kotlin {
         }
     }
 }
+
+// apply(plugin = "catcode2.maven-publish")

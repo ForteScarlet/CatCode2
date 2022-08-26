@@ -1,3 +1,7 @@
+import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
+import org.jetbrains.kotlin.konan.target.HostManager
+import org.jetbrains.kotlin.konan.target.KonanTarget
+
 plugins {
     id("signing")
     id("maven-publish")
@@ -12,20 +16,25 @@ if (!isPublishConfigurable) {
 if (isPublishConfigurable) {
     val (sonatypeUsername, sonatypePassword) = sonatypeUserInfo
     
-    // val jarSources by tasks.registering(Jar::class) {
-    //     archiveClassifier.set("sources")
-    //     from(sourceSets["main"].allSource)
-    // }
-    
-    // val jarJavadocTask = tasks.register<Jar>(name + "JavadocJar") {
-    //     archiveClassifier.set("javadoc")
-    // }
     val jarJavadoc by tasks.registering(Jar::class) {
         archiveClassifier.set("javadoc")
     }
     publishing {
         publications {
-            create<MavenPublication>("catcodeDist") {
+            repositories {
+                mavenLocal()
+                if (project.version.toString().contains("SNAPSHOT", true)) {
+                    configPublishMaven(Sonatype.Snapshot, sonatypeUsername, sonatypePassword)
+                } else {
+                    configPublishMaven(Sonatype.Central, sonatypeUsername, sonatypePassword)
+                }
+            }
+            
+            configureEach {
+                if (this !is MavenPublication) {
+                    return@configureEach
+                }
+                
                 // from(components["java"])
                 // artifact(jarSources)
                 artifact(jarJavadoc)
@@ -56,20 +65,7 @@ if (isPublishConfigurable) {
                 }
             }
             
-            
-            
-            repositories {
-                // mavenLocal()
-                if (project.version.toString().contains("SNAPSHOT", true)) {
-                    configPublishMaven(Sonatype.Snapshot, sonatypeUsername, sonatypePassword)
-                } else {
-                    configPublishMaven(Sonatype.Central, sonatypeUsername, sonatypePassword)
-                }
-            }
-            
-            
         }
-        
     }
     
     val keyId = prop("GPG_KEY_ID")
@@ -87,9 +83,65 @@ if (isPublishConfigurable) {
         sign(publishing.publications)
     }
     
+    afterEvaluate {
+        // bases
+        val publicationsFromMainHost = setOf(
+            "jvm",
+            "js",
+            "kotlinMultiplatform",
+            "metadata"
+        )
+        // val hostManager = HostManager().isEnabled()
+        
+        val hostManager = HostManager()
+        
+        configure<PublishingExtension> {
+            publications.matching {
+                // KonanTarget::class.sealedSubclasses.mapNotNull {
+                //     it.objectInstance
+                // }.forEach {
+                //     it
+                // }
+                // println(it.name)
+                // DefaultNativePlatform.getCurrentOperatingSystem().internalOs
+                it.name in publicationsFromMainHost || hostManager.isEnabled(KonanTarget.LINUX_X64)
+            }.all {
+                val targetPublication = this@all
+                tasks.withType<AbstractPublishToMaven>()
+                    .matching { it.publication == targetPublication }
+                    .configureEach {
+                        onlyIf {
+                            // main publishing CI job is executed on Linux host
+                            DefaultNativePlatform.getCurrentOperatingSystem().isLinux.apply {
+                                if (!this) {
+                                    logger.lifecycle("Publication ${(it as AbstractPublishToMaven).publication.name} is skipped on current host")
+                                }
+                            }
+                        }
+                    }
+            }
+        }
+    }
+    
     
     println("[publishing-configure] - [$name] configured.")
 }
+
+// kotlin {
+//     jvm {
+//         mavenPublication {
+//             javadocJar("jvmJavadocJar")
+//             pom {}
+//         }
+//     }
+//     js {
+//         mavenPublication {
+//             javadocJar("jsJavadocJar")
+//             pom {}
+//         }
+//     }
+// }
+
 
 fun RepositoryHandler.configPublishMaven(sonatype: Sonatype, username: String?, password: String?) {
     maven {
@@ -128,6 +180,16 @@ inline val Project.sourceSets: SourceSetContainer
 
 inline val Project.publishing: PublishingExtension
     get() = extensions.getByType<PublishingExtension>()
+
+fun org.gradle.api.Project.`kotlin`(configure: Action<org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension>): Unit =
+    (this as org.gradle.api.plugins.ExtensionAware).extensions.configure("kotlin", configure)
+
+fun MavenPublication.jar(taskName: String, config: Action<Jar>) = artifact(tasks.create(taskName, Jar::class, config))
+
+fun MavenPublication.javadocJar(taskName: String, config: Jar.() -> Unit = {}) = jar(taskName) {
+    archiveClassifier by "javadoc"
+    config()
+}
 
 fun show() {
     //// show project info
