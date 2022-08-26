@@ -49,6 +49,7 @@ jobs:
             clean
             build
             copySharedLibs
+            copyJsFileToSharedLibs
             -x test
             -Pkotlin.daemon.jvmargs="-Xmx8g -Dfile.encoding=UTF-8"
             -Porg.gradle.jvmargs="-Xmx8g -Dfile.encoding=UTF-8"
@@ -117,6 +118,6 @@ jobs:
         uses: softprops/action-gh-release@v0.1.14
         with:
           files: ./distributions/**
-          #          body_path: .changelog/${{ github.ref_name }}.md
-          #          generate_release_notes: true
-          draft: true
+#          body_path: .changelog/${{ github.ref_name }}.md
+          generate_release_notes: true
+#          draft: true

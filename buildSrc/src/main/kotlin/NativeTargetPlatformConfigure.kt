@@ -11,13 +11,13 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
 
 
 fun KotlinTargetWithBinaries<*, AbstractKotlinNativeBinaryContainer>.configSharedLib(configure: SharedLibrary.() -> Unit = {}) {
-    println("!!!!!!!!!!!!!!!!!!!!!!!!")
-    println("!!!!!!!!!!!!!!!!!!!!!!!!")
-    println("!!!!!!!!!!!!!!!!!!!!!!!!")
-    println("$name : $publishable")
-    println("!!!!!!!!!!!!!!!!!!!!!!!!")
-    println("!!!!!!!!!!!!!!!!!!!!!!!!")
-    println("!!!!!!!!!!!!!!!!!!!!!!!!")
+    // println("!!!!!!!!!!!!!!!!!!!!!!!!")
+    // println("!!!!!!!!!!!!!!!!!!!!!!!!")
+    // println("!!!!!!!!!!!!!!!!!!!!!!!!")
+    // println("$name : $publishable")
+    // println("!!!!!!!!!!!!!!!!!!!!!!!!")
+    // println("!!!!!!!!!!!!!!!!!!!!!!!!")
+    // println("!!!!!!!!!!!!!!!!!!!!!!!!")
     binaries {
         sharedLib {
             val targetSubDirectory = target.disambiguationClassifier?.let { "$it/" }.orEmpty()

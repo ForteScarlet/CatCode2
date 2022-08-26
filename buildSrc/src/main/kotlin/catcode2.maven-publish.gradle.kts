@@ -17,8 +17,11 @@ if (isPublishConfigurable) {
     val (sonatypeUsername, sonatypePassword) = sonatypeUserInfo
     
     val jarJavadoc by tasks.registering(Jar::class) {
+        group = "documentation"
         archiveClassifier.set("javadoc")
+        from(tasks.findByName("dokkaHtml"))
     }
+    
     publishing {
         publications {
             repositories {
@@ -35,14 +38,13 @@ if (isPublishConfigurable) {
                     return@configureEach
                 }
                 
-                // from(components["java"])
-                // artifact(jarSources)
                 artifact(jarJavadoc)
                 
-                groupId = project.group.toString()
-                artifactId = project.name
-                version = project.version.toString()
-                description = project.description?.toString() ?: Version.DESCRIPTION
+                
+                // groupId = project.group.toString()
+                // artifactId = project.name
+                // version = project.version.toString()
+                // description = project.description?.toString() ?: Version.DESCRIPTION
                 
                 pom {
                     show()
