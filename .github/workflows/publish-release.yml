@@ -11,7 +11,8 @@ env:
   GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
   OSSRH_USER: ${{ secrets.OSS_USERNAME }}
   OSSRH_PASSWORD: ${{ secrets.OSS_PASSWORD }}
-  GRADLE_OPTS: "-Xmx4G -Dfile.encoding=UTF-8"
+  CATCODE2_RELEASE: true
+  GRADLE_OPTS: "-Xmx8G -Dfile.encoding=UTF-8"
 
 
 jobs:
@@ -25,9 +26,6 @@ jobs:
       # 检出仓库代码
       - name: Check out repo
         uses: actions/checkout@v2
-        with:
-          persist-credentials: false
-          fetch-depth: 0
 
       # Setup java
       # https://github.com/marketplace/actions/setup-java-jdk
@@ -52,9 +50,9 @@ jobs:
             build
             copySharedLibs
             -x test
-            -Pkotlin.daemon.jvmargs=-Xmx4g
-            -Porg.gradle.jvmargs="-Xmx4G -Dfile.encoding=UTF-8"
-            -Porg.gradle.workers.max=4
+            -Pkotlin.daemon.jvmargs="-Xmx8g -Dfile.encoding=UTF-8"
+            -Porg.gradle.jvmargs="-Xmx8g -Dfile.encoding=UTF-8"
+            -Porg.gradle.workers.max=8
             -Porg.gradle.parallel=true
 
       - name: Upload Build Artifacts
@@ -93,15 +91,13 @@ jobs:
             build
             publishToSonatype
             closeAndReleaseStagingRepository
+            --info
             --warning-mode all
-            --info 
             -x test
-            -Pkotlin.daemon.jvmargs=-Xmx4G
-            -Porg.gradle.jvmargs="-Xmx4G -Dfile.encoding=UTF-8"
-            -Porg.gradle.workers.max=4
+            -Pkotlin.daemon.jvmargs="-Xmx8G -Dfile.encoding=UTF-8"
+            -Porg.gradle.jvmargs="-Xmx8G -Dfile.encoding=UTF-8"
+            -Porg.gradle.workers.max=8
             -Porg.gradle.parallel=true
-        env:
-          CATCODE2_RELEASE: true
 
   create-release:
     runs-on: ubuntu-latest

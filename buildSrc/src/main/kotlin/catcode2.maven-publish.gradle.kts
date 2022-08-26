@@ -26,10 +26,6 @@ if (isPublishConfigurable) {
     publishing {
         publications {
             create<MavenPublication>("catcodeDist") {
-                // val jarJavadocTask = tasks.register<Jar>(this.name + "JavadocJar") {
-                // val jarJavadocTask = tasks.register<Jar>(this.name + "JavadocJar") {
-                //     archiveClassifier.set("javadoc")
-                // }
                 // from(components["java"])
                 // artifact(jarSources)
                 artifact(jarJavadoc)
@@ -63,12 +59,12 @@ if (isPublishConfigurable) {
             
             
             repositories {
-                mavenLocal()
-                // if (project.version.toString().contains("SNAPSHOT", true)) {
-                //     configPublishMaven(Sonatype.Snapshot, sonatypeUsername, sonatypePassword)
-                // } else {
-                //     configPublishMaven(Sonatype.Central, sonatypeUsername, sonatypePassword)
-                // }
+                // mavenLocal()
+                if (project.version.toString().contains("SNAPSHOT", true)) {
+                    configPublishMaven(Sonatype.Snapshot, sonatypeUsername, sonatypePassword)
+                } else {
+                    configPublishMaven(Sonatype.Central, sonatypeUsername, sonatypePassword)
+                }
             }
             
             
