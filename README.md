@@ -93,7 +93,7 @@ implementation("love.forte.catcode2:catcode2-serialization-kotlinx:$catcode2_ver
     <!-- 核心库 -->
     <dependency>
         <groupId>love.forte.catcode2</groupId>
-        <artifactId>catcode2-core</artifactId>
+        <artifactId>catcode2-core-jvm</artifactId>
         <version>${catcode2.version}</version>
         <scope>compile</scope>
     </dependency>
@@ -101,7 +101,7 @@ implementation("love.forte.catcode2:catcode2-serialization-kotlinx:$catcode2_ver
     <!-- ktx序列化库 -->
     <dependency>
         <groupId>love.forte.catcode2</groupId>
-        <artifactId>catcode2-serialization-kotlinx</artifactId>
+        <artifactId>catcode2-serialization-kotlinx-jvm</artifactId>
         <version>${catcode2.version}</version>
         <scope>compile</scope>
     </dependency>
