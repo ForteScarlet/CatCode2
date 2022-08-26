@@ -89,21 +89,23 @@ implementation("love.forte.catcode2:catcode2-serialization-kotlinx:$catcode2_ver
 **Maven**
 
 ```xml
-<!-- 核心库 -->
-<dependency>
-    <groupId>love.forte.catcode2</groupId>
-    <artifactId>catcode2-core</artifactId>
-    <version>${catcode2.version}</version>
-    <scope>compile</scope>
-</dependency>
-
-<!-- ktx序列化库 -->
-<dependency>
-    <groupId>love.forte.catcode2</groupId>
-    <artifactId>catcode2-serialization-kotlinx</artifactId>
-    <version>${catcode2.version}</version>
-    <scope>compile</scope>
-</dependency>
+<dependencies>
+    <!-- 核心库 -->
+    <dependency>
+        <groupId>love.forte.catcode2</groupId>
+        <artifactId>catcode2-core</artifactId>
+        <version>${catcode2.version}</version>
+        <scope>compile</scope>
+    </dependency>
+    
+    <!-- ktx序列化库 -->
+    <dependency>
+        <groupId>love.forte.catcode2</groupId>
+        <artifactId>catcode2-serialization-kotlinx</artifactId>
+        <version>${catcode2.version}</version>
+        <scope>compile</scope>
+    </dependency>
+</dependencies>
 ```
 
 ### JS
