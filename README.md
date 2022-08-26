@@ -10,10 +10,10 @@
     <span>
         <a href="https://gitee.com/ForteScarlet/CatCode2" target="_blank">gitee</a>
     </span> <br />
-    <small> &gt; 感谢 <a href="https://github.com/ForteScarlet/simpler-robot" target="_blank">simple-robot</a> 开发团队成员制作的猫猫logo &lt; </small> <br />
+    <small> &gt; 感谢 <a href="https://github.com/ForteScarlet/simpler-robot" target="_blank">Simple Robot</a> 开发团队成员制作的猫猫logo &lt; </small> <br />
     &gt; 如果有点击一下⭐的话，猫猫会很开心哦~ &lt; <br />
-    <a href="https://repo1.maven.org/maven2/love/forte/catcode/" target="_blank" >
-        <img src="https://img.shields.io/maven-central/v/love.forte.catcode/catcode2" alt="maven-central" />
+    <a href="https://repo1.maven.org/maven2/love/forte/catcode2/" target="_blank" >
+        <img src="https://img.shields.io/maven-central/v/love.forte.catcode2/catcode2-core" alt="maven-central" />
     </a>
 
 </div>
@@ -101,8 +101,8 @@ implementation("love.forte.catcode2:catcode2-serialization-kotlinx:$catcode2_ver
 **直接导入**
 
 前往 [releases](https://github.com/ForteScarlet/CatCode2/releases) 
-选择你需要的版本，并在其文件列表中找到你所需要的JS文件，
-例如 `catcode2-catcode2-core.js`。
+选择你需要的版本，并在其文件列表中找到 `kotlin.js` 和你所需要的JS文件，
+例如 `catcode2-core.js` （和 `catcode2-core.js.map` ） 。
 
 > _如果你在 [releases](https://github.com/ForteScarlet/CatCode2/releases) 中没有找到你想要的 `*.js` 文件，那么可能就是我忘了上传了。_
 
