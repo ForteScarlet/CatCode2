@@ -11,7 +11,7 @@ env:
   GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
   OSSRH_USER: ${{ secrets.OSS_USERNAME }}
   OSSRH_PASSWORD: ${{ secrets.OSS_PASSWORD }}
-  GRADLE_OPTS: "-Xmx8G -Xms2G -XX:MaxMetaspaceSize=1G -Dfile.encoding=UTF-8"
+  GRADLE_OPTS: "-Xmx4G -Dfile.encoding=UTF-8"
 
 
 jobs:
@@ -53,8 +53,8 @@ jobs:
             copySharedLibs
             -x test
             -Pkotlin.daemon.jvmargs=-Xmx4g
-            -Porg.gradle.jvmargs="-Xmx8G -Xms2G -XX:MaxMetaspaceSize=1G -Dfile.encoding=UTF-8"
-            -Porg.gradle.workers.max=16
+            -Porg.gradle.jvmargs="-Xmx4G -Dfile.encoding=UTF-8"
+            -Porg.gradle.workers.max=4
             -Porg.gradle.parallel=true
 
       - name: Upload Build Artifacts
@@ -96,9 +96,9 @@ jobs:
             --warning-mode all
             --info 
             -x test
-            -Pkotlin.daemon.jvmargs=-Xmx4g
-            -Porg.gradle.jvmargs="-Xmx8G -Xms4G -XX:MaxMetaspaceSize=1G -Dfile.encoding=UTF-8"
-            -Porg.gradle.workers.max=16
+            -Pkotlin.daemon.jvmargs=-Xmx4G
+            -Porg.gradle.jvmargs="-Xmx4G -Dfile.encoding=UTF-8"
+            -Porg.gradle.workers.max=4
             -Porg.gradle.parallel=true
         env:
           CATCODE2_RELEASE: true
