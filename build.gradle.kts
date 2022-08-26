@@ -7,6 +7,7 @@ val versionValue = if (isRelease()) Version.VERSION else "${Version.VERSION}-SNA
 
 group = Version.GROUP
 version = versionValue
+description = Version.DESCRIPTION
 
 println("VERSION = $group")
 println("GROUP   = $version")
@@ -14,6 +15,7 @@ println("GROUP   = $version")
 subprojects {
     group = Version.GROUP
     version = versionValue
+    description = Version.DESCRIPTION
 }
 
 repositories {

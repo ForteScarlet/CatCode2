@@ -42,6 +42,7 @@ val versionValue = if (isRelease()) Version.VERSION else "${Version.VERSION}-SNA
 
 group = Version.GROUP
 version = versionValue
+description = Version.DESCRIPTION
 
 val isPublishConfigurable = isPublishConfigurable()
 
