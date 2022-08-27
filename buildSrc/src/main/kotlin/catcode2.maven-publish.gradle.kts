@@ -97,15 +97,29 @@ if (isPublishConfigurable) {
         
         val hostManager = HostManager()
         
+        // linux上支持的host
+        val linuxSupports = hostManager.enabledByHost[KonanTarget.LINUX_X64]?.mapTo(mutableSetOf()) { it.name }
+            ?: emptySet<String>()
+        
         configure<PublishingExtension> {
             publications.matching {
                 println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                 println("publications.name: ${it.name}")
+                val hostName = buildString(it.name.length) {
+                    it.name.forEach { c ->
+                        if (c.isUpperCase()) {
+                            append('_').append(c.toLowerCase())
+                        } else {
+                            append(c)
+                        }
+                    }
+                }
+                println("publications.hostName: $hostName")
                 println("publications.name in $publicationsFromMainHost: ${it.name in publicationsFromMainHost}")
-                println("hostManager.isEnabled(KonanTarget.LINUX_X64): ${hostManager.isEnabled(KonanTarget.LINUX_X64)}")
-                println("match: ${hostManager.isEnabled(KonanTarget.LINUX_X64)}")
+                println("publications.hostName in $linuxSupports: ${hostName in linuxSupports}")
+                println("match: ${it.name in publicationsFromMainHost || hostName in linuxSupports}")
                 println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                it.name in publicationsFromMainHost || hostManager.isEnabled(KonanTarget.LINUX_X64)
+                it.name in publicationsFromMainHost || hostName in linuxSupports
             }.all {
                 val targetPublication = this@all
                 tasks.withType<AbstractPublishToMaven>()
