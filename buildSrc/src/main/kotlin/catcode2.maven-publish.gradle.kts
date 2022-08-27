@@ -99,13 +99,12 @@ if (isPublishConfigurable) {
         
         configure<PublishingExtension> {
             publications.matching {
-                // KonanTarget::class.sealedSubclasses.mapNotNull {
-                //     it.objectInstance
-                // }.forEach {
-                //     it
-                // }
-                // println(it.name)
-                // DefaultNativePlatform.getCurrentOperatingSystem().internalOs
+                println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                println("publications.name: ${it.name}")
+                println("publications.name in $publicationsFromMainHost: ${it.name in publicationsFromMainHost}")
+                println("hostManager.isEnabled(KonanTarget.LINUX_X64): ${hostManager.isEnabled(KonanTarget.LINUX_X64)}")
+                println("match: ${hostManager.isEnabled(KonanTarget.LINUX_X64)}")
+                println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                 it.name in publicationsFromMainHost || hostManager.isEnabled(KonanTarget.LINUX_X64)
             }.all {
                 val targetPublication = this@all
@@ -116,7 +115,8 @@ if (isPublishConfigurable) {
                             // main publishing CI job is executed on Linux host
                             DefaultNativePlatform.getCurrentOperatingSystem().isLinux.apply {
                                 if (!this) {
-                                    logger.lifecycle("Publication ${(it as AbstractPublishToMaven).publication.name} is skipped on current host")
+                                    // logger.lifecycle("Publication ${(it as AbstractPublishToMaven).publication.name} is skipped on current host")
+                                    println("Publication ${(it as AbstractPublishToMaven).publication.name} is skipped on current host")
                                 }
                             }
                         }

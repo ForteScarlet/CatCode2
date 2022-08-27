@@ -117,6 +117,7 @@ jobs:
       - name: Create github releases
         uses: softprops/action-gh-release@v0.1.14
         with:
+          token: ${{ secrets.FORTE_TOKEN }}
           files: ./distributions/**
 #          body_path: .changelog/${{ github.ref_name }}.md
           generate_release_notes: true
