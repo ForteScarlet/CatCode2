@@ -4,10 +4,13 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.getValue
 import org.gradle.kotlin.dsl.getting
-import org.gradle.kotlin.dsl.repositories
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.mpp.SharedLibrary
+
+private const val GITHUB_URL = "https://github.com/ForteScarlet/CatCode2"
+private const val GIT_URL = "git+https://github.com/ForteScarlet/CatCode2"
+private const val GITHUB_ISSUES_URL = "https://github.com/ForteScarlet/CatCode2/issues"
 
 fun Project.configMultiplatform(
     skipSerializationNotSupport: Boolean = false,
@@ -31,9 +34,24 @@ fun Project.configMultiplatform(
         }
         
         js(BOTH) {
-            browser()
-            nodejs {
+            moduleName = project.name
             
+            browser()
+            nodejs()
+            
+            compilations["main"].packageJson {
+                name = project.name
+                customField("repository", mapOf("type" to "git", "url" to GIT_URL))
+                customField("description", project.description?.toString() ?: "")
+                customField(
+                    "keywords", listOf(
+                        "CatCode", "CatCode2", "cat code", "Kotlin", "ForteScarlet", "Simbot", "Simple Robot", "Forte"
+                    )
+                )
+                customField("author", "ForteScarlet")
+                customField("license", "MIT")
+                customField("bugs", mapOf("url" to GITHUB_ISSUES_URL))
+                customField("homepage", GITHUB_URL)
             }
         }
         

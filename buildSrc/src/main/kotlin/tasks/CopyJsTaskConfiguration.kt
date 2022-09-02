@@ -7,28 +7,20 @@ fun Project.registerJsCopyTask() = tasks.register<Copy>("copyJsFileToSharedLibs"
     group = "build"
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     
-    
     from(fileTree(rootProject.buildDir.resolve("js")) {
-        include("packages/*-js-legacy/kotlin/*-js-legacy.js")
-        include("packages/*-js-legacy/kotlin/*-js-legacy.js.map")
-        include("packages_imported/kotlin/1.7.10/kotlin.js")
-        include("packages_imported/kotlin/1.7.10/kotlin.js.map")
+        rootProject.subprojects.forEach {
+            val projectName = it.name
+            include("packages/$projectName/kotlin/$projectName.js")
+            include("packages/$projectName/kotlin/$projectName.js.map")
+    
+        }
+        include("packages_imported/*/*/*.js")
+        include("packages_imported/*/*/*.js.map")
+        
+        exclude { "test" in it.name }
+        
     }.files)
     
-    rename { n ->
-        var renamed = n
-        if (renamed.endsWith("-js-legacy.js")) {
-            renamed = renamed.removeSuffix("-js-legacy.js") + ".js"
-        }
-        if (renamed.endsWith("-js-legacy.js.map")) {
-            renamed = renamed.removeSuffix("-js-legacy.js.map") + ".js.map"
-        }
-        
-        if (renamed.startsWith(rootProject.name + "-")) {
-            renamed = renamed.removePrefix(rootProject.name + "-")
-        }
-        
-        renamed
-    }
+    
     into(rootProject.buildDir.resolve("releaseSharedLibs"))
 }

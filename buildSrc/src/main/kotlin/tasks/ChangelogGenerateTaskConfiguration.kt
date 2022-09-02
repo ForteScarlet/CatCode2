@@ -123,7 +123,7 @@ private inline fun repoTargetsToTableString(targets: Iterable<MavenRepoTarget>, 
     onString("|---------|-----------------|------------------|\n")
     
     targets.forEach { target ->
-        val linkDisplay = "${target.artifactId}: ${target.version}"
+        val linkDisplay = "${target.artifactId}: v${target.version}"
         onString("| ${target.artifactId} | [$linkDisplay](${target.toRepo1Url()}) | [$linkDisplay](${target.tomavenSerachUrl()}) |\n")
     }
 }
