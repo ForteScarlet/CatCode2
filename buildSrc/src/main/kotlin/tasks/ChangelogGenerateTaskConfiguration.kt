@@ -10,7 +10,7 @@ import java.io.File
 
 
 fun Project.registerChangelogGenerateTask() = tasks.register("generateChangelog") {
-    group = "build"
+    group = "changelog"
     
     logger.info("============================================================")
     val tagNameProperty = "generateChangelogTagName"
@@ -97,6 +97,9 @@ private fun Project.writeToChangelog(text: String, tag: String) {
                 customFile.bufferedReader().use {  reader ->
                     reader.copyTo(writer)
                 }
+                writer.newLine()
+                writer.newLine()
+                writer.append("<hr />")
                 writer.newLine()
                 writer.newLine()
             }

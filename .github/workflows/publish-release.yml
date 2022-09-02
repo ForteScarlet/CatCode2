@@ -101,7 +101,14 @@ jobs:
           fetch-depth: 0
 
       - name: Generate changelog file
-        run: ./gradlew generateChangelog -DgenerateChangelogTagName =${{ github.ref_name }}
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: 7.5.1
+          arguments: |
+            generateChangelog 
+            --info 
+            --warning-mode all
+            -DgenerateChangelogTagName=${{ github.ref_name }}
 
       - name: Download artifacts
         uses: actions/download-artifact@v2
@@ -115,6 +122,6 @@ jobs:
         with:
           token: ${{ secrets.FORTE_TOKEN }}
           files: ./distributions/**
-          body_path: .changelog/${{ github.ref_name }}.changelog.md
+          body_path: ./.changelog/${{ github.ref_name }}.changelog.md
           generate_release_notes: true
-#          draft: true
+          prerelease: ${{ contains(github.ref_name, 'preview') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'alpha') }}
