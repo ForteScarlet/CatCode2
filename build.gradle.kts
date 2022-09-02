@@ -1,3 +1,5 @@
+import tasks.registerChangelogGenerateTask
+
 plugins {
     id("catcode2.nexus-publish")
     id("catcode2.dokka-multi-module")
@@ -9,17 +11,40 @@ group = Version.GROUP
 version = versionValue
 description = Version.DESCRIPTION
 
-println("VERSION = $group")
-println("GROUP   = $version")
+println("GROUP   = $group")
+println("VERSION = $version")
+
+
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {
+        url = uri(Sonatype.Snapshot.URL)
+        mavenContent {
+            snapshotsOnly()
+        }
+    }
+}
 
 subprojects {
     group = Version.GROUP
     version = versionValue
     description = Version.DESCRIPTION
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven {
+            url = uri(Sonatype.Snapshot.URL)
+            mavenContent {
+                snapshotsOnly()
+            }
+        }
+    }
 }
 
-repositories {
-    mavenCentral()
-}
+
 
 registerJsCopyTask()
+
+registerChangelogGenerateTask()

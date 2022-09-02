@@ -38,17 +38,6 @@ plugins {
     id("org.jetbrains.dokka")
 }
 
-repositories {
-    mavenLocal()
-    mavenCentral()
-    maven {
-        url = uri(Sonatype.Snapshot.URL)
-        mavenContent {
-            snapshotsOnly()
-        }
-    }
-}
-
 // tasks.withType<org.jetbrains.dokka.gradle.DokkaTaskPartial>().configureEach {
 tasks.withType<DokkaTask>().configureEach {
     dokkaSourceSets {

@@ -4,15 +4,3 @@ object Version {
     const val DESCRIPTION = "Cat Code, the spirit of CQ code continues, a cute universal special code."
 }
 
-
-fun isRelease(): Boolean {
-    if (System.getProperty("CATCODE2_RELEASE")?.toBoolean() == true) {
-        return true
-    }
-    
-    if (System.getenv("CATCODE2_RELEASE")?.toBoolean() == true) {
-        return true
-    }
-    
-    return false
-}

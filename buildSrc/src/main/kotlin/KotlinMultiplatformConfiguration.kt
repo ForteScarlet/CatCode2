@@ -14,10 +14,6 @@ fun Project.configMultiplatform(
     sharedLibConfigure: SharedLibrary.() -> Unit = {},
     andMore: (KotlinMultiplatformExtension.() -> Unit)? = null,
 ) {
-    repositories {
-        mavenCentral()
-    }
-    
     kotlin {
         explicitApi()
         

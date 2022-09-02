@@ -23,9 +23,6 @@ plugins {
     id("org.jetbrains.dokka")
 }
 
-repositories {
-    mavenCentral()
-}
 
 fun org.jetbrains.dokka.gradle.AbstractDokkaTask.configOutput(format: String) {
     moduleName.set("simple-robot")
@@ -38,7 +35,7 @@ tasks.named<org.jetbrains.dokka.gradle.DokkaMultiModuleTask>("dokkaHtmlMultiModu
 
 
 tasks.register("dokkaHtmlMultiModuleAndPost") {
-    // TODO doc version
+    // TODO doc version?
     group = JavaBasePlugin.DOCUMENTATION_GROUP
     dependsOn("dokkaHtmlMultiModule")
     doLast {

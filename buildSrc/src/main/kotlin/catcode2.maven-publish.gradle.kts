@@ -70,9 +70,9 @@ if (isPublishConfigurable) {
         }
     }
     
-    val keyId = prop("GPG_KEY_ID")
-    val secretKey = prop("GPG_SECRET_KEY")
-    val password = prop("GPG_PASSWORD")
+    val keyId = prop(CiConstant.GPG_KEY_ID)
+    val secretKey = prop(CiConstant.GPG_SECRET_KEY)
+    val password = prop(CiConstant.GPG_PASSWORD)
     
     signing {
         // setRequired {
@@ -103,8 +103,7 @@ if (isPublishConfigurable) {
         
         configure<PublishingExtension> {
             publications.matching {
-                println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                println("publications.name: ${it.name}")
+                logger.info("publications.name: {}", it.name)
                 val hostName = buildString(it.name.length) {
                     it.name.forEach { c ->
                         if (c.isUpperCase()) {
@@ -114,11 +113,10 @@ if (isPublishConfigurable) {
                         }
                     }
                 }
-                println("publications.hostName: $hostName")
-                println("publications.name in $publicationsFromMainHost: ${it.name in publicationsFromMainHost}")
-                println("publications.hostName in $linuxSupports: ${hostName in linuxSupports}")
-                println("match: ${it.name in publicationsFromMainHost || hostName in linuxSupports}")
-                println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                logger.info("publications.hostName: {}", hostName)
+                logger.info("publications.name in {}: {}", publicationsFromMainHost, it.name in publicationsFromMainHost)
+                logger.info("publications.hostName in {}: {}", linuxSupports, hostName in linuxSupports)
+                logger.info("match: {}", it.name in publicationsFromMainHost || hostName in linuxSupports)
                 it.name in publicationsFromMainHost || hostName in linuxSupports
             }.all {
                 val targetPublication = this@all
@@ -130,7 +128,7 @@ if (isPublishConfigurable) {
                             DefaultNativePlatform.getCurrentOperatingSystem().isLinux.apply {
                                 if (!this) {
                                     // logger.lifecycle("Publication ${(it as AbstractPublishToMaven).publication.name} is skipped on current host")
-                                    println("Publication ${(it as AbstractPublishToMaven).publication.name} is skipped on current host")
+                                    logger.info("Publication {} is skipped on current host", (it as AbstractPublishToMaven).publication.name)
                                 }
                             }
                         }
@@ -140,7 +138,7 @@ if (isPublishConfigurable) {
     }
     
     
-    println("[publishing-configure] - [$name] configured.")
+    logger.info("[publishing-configure] - [$name] configured.")
 }
 
 // kotlin {
