@@ -17,10 +17,10 @@ env:
 
 jobs:
   package:
-    name: Test And Build
+    name: Test and build
     strategy:
       matrix:
-        os: [ macos-latest, ubuntu-latest, windows-latest ]
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
     runs-on: ${{ matrix.os }}
     steps:
       # 检出仓库代码
@@ -47,12 +47,11 @@ jobs:
           gradle-version: 7.5.1
           arguments: assemble allTests
 
-      - name: Build
+      - name: Build and publish
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: 7.5.1
           arguments: |
-            clean
             build
             copySharedLibs
             copyJsFileToSharedLibs
@@ -62,35 +61,13 @@ jobs:
             -Porg.gradle.workers.max=8
             -Porg.gradle.parallel=true
 
-      - name: Upload Build Artifacts
+      - name: Upload build artifacts
         uses: actions/upload-artifact@v2.3.1
         with:
           name: distributions
           path: build/releaseSharedLibs/**
 
-
-  publish-to-maven:
-    name: Publish To Maven
-    strategy:
-      matrix:
-        os: [ macos-latest, ubuntu-latest, windows-latest ]
-    runs-on: ${{ matrix.os }}
-#    runs-on: ubuntu-latest
-    needs: package
-    steps:
-      # 检出仓库代码
-      - name: Check out repo
-        uses: actions/checkout@v2
-
-      # Setup java
-      # https://github.com/marketplace/actions/setup-java-jdk
-      - name: Setup Java 8
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'temurin'
-          java-version: '8'
-
-      - name: Publish To Sonatype
+      - name: Publish to sonatype
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: 7.5.1
@@ -104,6 +81,43 @@ jobs:
             -Porg.gradle.jvmargs="-Xmx8G -Dfile.encoding=UTF-8"
             -Porg.gradle.workers.max=8
             -Porg.gradle.parallel=true
+
+#  publish-to-maven:
+#    name: Publish To Maven
+#    strategy:
+#      matrix:
+#        os: [ macos-latest, ubuntu-latest, windows-latest ]
+#    runs-on: ${{ matrix.os }}
+##    runs-on: ubuntu-latest
+#    needs: package
+#    steps:
+#      # 检出仓库代码
+#      - name: Check out repo
+#        uses: actions/checkout@v2
+#
+#      # Setup java
+#      # https://github.com/marketplace/actions/setup-java-jdk
+#      - name: Setup Java 8
+#        uses: actions/setup-java@v2
+#        with:
+#          distribution: 'temurin'
+#          java-version: '8'
+#
+#      - name: Publish To Sonatype
+#        uses: gradle/gradle-build-action@v2
+#        with:
+#          gradle-version: 7.5.1
+#          arguments: |
+#            publishToSonatype
+#            closeAndReleaseStagingRepository
+#            --info
+#            --warning-mode all
+#            -x test
+#            -Pkotlin.daemon.jvmargs="-Xmx8G -Dfile.encoding=UTF-8"
+#            -Porg.gradle.jvmargs="-Xmx8G -Dfile.encoding=UTF-8"
+#            -Porg.gradle.workers.max=8
+#            -Porg.gradle.parallel=true
+
 
   create-release:
     runs-on: ubuntu-latest

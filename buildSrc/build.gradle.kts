@@ -25,6 +25,7 @@ repositories {
     gradlePluginPortal()
 }
 
+// copyJs
 val kotlinVersion = "1.7.10"
 val dokkaPluginVersion = "1.7.10"
 
@@ -40,6 +41,3 @@ dependencies {
 }
 val compileKotlin: KotlinCompile by tasks
 
-// compileKotlin.kotlinOptions {
-//     freeCompilerArgs = freeCompilerArgs + listOf("-Xinline-classes")
-// }

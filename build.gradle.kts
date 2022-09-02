@@ -30,7 +30,8 @@ tasks.register<Copy>("copyJsFileToSharedLibs") {
     from(fileTree(rootProject.buildDir.resolve("js")) {
         include("packages/*-js-legacy/kotlin/*-js-legacy.js")
         include("packages/*-js-legacy/kotlin/*-js-legacy.js.map")
-        include("packages_imported/kotlin/*/kotlin.js")
+        include("packages_imported/kotlin/1.7.10/kotlin.js")
+        include("packages_imported/kotlin/1.7.10/kotlin.js.map")
     }.files)
     
     rename { n ->
@@ -50,9 +51,9 @@ tasks.register<Copy>("copyJsFileToSharedLibs") {
     }
     into(rootProject.buildDir.resolve("releaseSharedLibs"))
     
-    onlyIf {
-        // main publishing CI job is executed on Linux host
-        org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurrentOperatingSystem().isLinux
-    }
+    // onlyIf {
+    //     // main publishing CI job is executed on Linux host
+    //     org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurrentOperatingSystem().isLinux
+    // }
     
 }
