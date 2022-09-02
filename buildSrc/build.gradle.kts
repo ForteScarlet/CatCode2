@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 /*
  *  Copyright (c) 2021-2022 ForteScarlet <ForteScarlet@163.com>
  *
@@ -36,3 +38,8 @@ dependencies {
     // see https://github.com/gradle-nexus/publish-plugin
     implementation("io.github.gradle-nexus:publish-plugin:1.1.0")
 }
+val compileKotlin: KotlinCompile by tasks
+
+// compileKotlin.kotlinOptions {
+//     freeCompilerArgs = freeCompilerArgs + listOf("-Xinline-classes")
+// }

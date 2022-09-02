@@ -1,7 +1,7 @@
 object Version {
     const val GROUP = "love.forte.catcode2"
-    const val VERSION = "0.1.2"
-    const val DESCRIPTION = "Cat code, the spirit of CQ code continues, a cute universal special code."
+    const val VERSION = "0.1.3"
+    const val DESCRIPTION = "Cat Code, the spirit of CQ code continues, a cute universal special code."
 }
 
 

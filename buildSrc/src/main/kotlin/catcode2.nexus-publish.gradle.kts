@@ -15,8 +15,6 @@
  *
  */
 
-import java.time.Duration
-
 /*
  *  Copyright (c) 2022 ForteScarlet <ForteScarlet@163.com>
  *
@@ -56,23 +54,27 @@ if (isPublishConfigurable) {
     nexusPublishing {
         println("[NEXUS] - project.group:   ${project.group}")
         println("[NEXUS] - project.version: ${project.version}")
-        packageGroup.set(project.group.toString())
-        repositoryDescription.set(project.description)
-
+        packageGroup by project.group.toString()
+        repositoryDescription by (project.description ?: "")
+        
         useStaging.set(
             project.provider { !project.version.toString().endsWith("SNAPSHOT", ignoreCase = true) }
         )
-
+        
+        clientTimeout by 30 unit TimeUnit.MINUTES
+        connectTimeout by 30 unit TimeUnit.MINUTES
+        
+        
         transitionCheckOptions {
-            maxRetries.set(100)
-            delayBetween.set(Duration.ofSeconds(5))
+            maxRetries by 150
+            delayBetween by 15 unit TimeUnit.SECONDS
         }
         
         repositories {
             sonatype {
-                snapshotRepositoryUrl.set(uri(Sonatype.Snapshot.URL))
-                username.set(sonatypeUsername)
-                password.set(sonatypePassword)
+                snapshotRepositoryUrl by uri(Sonatype.Snapshot.URL)
+                username by sonatypeUsername
+                password by sonatypePassword
             }
         }
     }

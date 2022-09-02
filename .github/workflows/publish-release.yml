@@ -26,6 +26,9 @@ jobs:
       # 检出仓库代码
       - name: Check out repo
         uses: actions/checkout@v2
+        with:
+          # release workflow should have access to all tags
+          fetch-depth: 0
 
       # Setup java
       # https://github.com/marketplace/actions/setup-java-jdk
@@ -34,6 +37,9 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '8'
+
+      - name: Status git before
+        run: git status
 
       - name: Test
         uses: gradle/gradle-build-action@v2
