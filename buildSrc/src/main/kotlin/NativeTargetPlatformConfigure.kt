@@ -141,6 +141,9 @@ fun KotlinTargetContainerWithPresetFunctions.configureSupportNativePlatforms(
         configSharedLib(sharedLibConfigure)
     }
 
+    // not support in kotlinx serialization
+    // ...
+    // right?
     if (!skipSerializationNotSupport) {
         linuxMips32 {
             configSharedLib(sharedLibConfigure)
