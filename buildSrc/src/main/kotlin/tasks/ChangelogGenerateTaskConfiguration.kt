@@ -95,7 +95,7 @@ private fun Project.writeToChangelog(text: String, tag: String) {
             
             file.bufferedWriter().use { writer ->
                 customFile.bufferedReader().use {  reader ->
-                    reader.transferTo(writer)
+                    reader.copyTo(writer)
                 }
                 writer.newLine()
                 writer.newLine()
