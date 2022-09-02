@@ -9,6 +9,7 @@ import java.util.*
 /**
  * 提供属性集并构建一个 [Cat]。
  */
+@JvmName("of")
 public fun catOf(type: String, head: String = CAT_HEAD, properties: Properties): Cat {
     return buildCat(type, head) {
         properties.stringPropertyNames().forEach { name ->
