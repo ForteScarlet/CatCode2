@@ -16,7 +16,7 @@ env:
 
 
 jobs:
-  package:
+  test-build-publish:
     name: Test and build
     strategy:
       matrix:
@@ -82,6 +82,7 @@ jobs:
             -Porg.gradle.workers.max=8
             -Porg.gradle.parallel=true
 
+
 #  publish-to-maven:
 #    name: Publish To Maven
 #    strategy:
@@ -121,7 +122,7 @@ jobs:
 
   create-release:
     runs-on: ubuntu-latest
-    needs: publish-to-maven
+    needs: test-build-publish
 
     permissions:
       contents: write
