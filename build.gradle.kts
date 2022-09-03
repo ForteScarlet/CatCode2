@@ -1,4 +1,5 @@
 import tasks.registerChangelogGenerateTask
+import tasks.registerNpmPublishTask
 
 plugins {
     id("catcode2.nexus-publish")
@@ -49,10 +50,4 @@ registerJsCopyTask()
 
 registerChangelogGenerateTask()
 
-tasks.register("justtest") {
-    println("========")
-    println("A = " + prop("A"))
-    val processors = Runtime.getRuntime().availableProcessors()
-    println("processors = $processors")
-    println("========")
-}
+registerNpmPublishTask()

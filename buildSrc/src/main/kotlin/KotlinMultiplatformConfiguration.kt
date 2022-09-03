@@ -9,7 +9,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.mpp.SharedLibrary
 
 private const val GITHUB_URL = "https://github.com/ForteScarlet/CatCode2"
-private const val GIT_URL = "git+https://github.com/ForteScarlet/CatCode2"
+private const val GIT_URL = "git+https://github.com/ForteScarlet/CatCode2.git"
 private const val GITHUB_ISSUES_URL = "https://github.com/ForteScarlet/CatCode2/issues"
 
 fun Project.configMultiplatform(
@@ -33,25 +33,47 @@ fun Project.configMultiplatform(
             }
         }
         
-        js(BOTH) {
+        // The IR backend does not make Kotlin declarations available to JavaScript by default at all.
+        // To make Kotlin declarations visible to JavaScript, they must be annotated with @JsExport.
+        js(IR) {
             moduleName = project.name
             
             browser()
             nodejs()
+            binaries.library()
+    
+            // moduleKind0 = "umd"
+            val moduleKind0 = "commonjs"
             
-            compilations["main"].packageJson {
-                name = project.name
-                customField("repository", mapOf("type" to "git", "url" to GIT_URL))
-                customField("description", project.description?.toString() ?: "")
-                customField(
-                    "keywords", listOf(
-                        "CatCode", "CatCode2", "cat code", "Kotlin", "ForteScarlet", "Simbot", "Simple Robot", "Forte"
+            compilations["main"].apply {
+                packageJson {
+                    name = project.name
+                    customField("repository", mapOf("type" to "git", "url" to GIT_URL))
+                    customField("description", project.description?.toString() ?: "")
+                    customField(
+                        "keywords", listOf(
+                            "CatCode", "Kotlin", "ForteScarlet", "Simbot", "Simple Robot", "Forte"
+                        )
                     )
-                )
-                customField("author", "ForteScarlet")
-                customField("license", "MIT")
-                customField("bugs", mapOf("url" to GITHUB_ISSUES_URL))
-                customField("homepage", GITHUB_URL)
+                    customField("author", "ForteScarlet")
+                    customField("license", "MIT")
+                    customField("bugs", mapOf("url" to GITHUB_ISSUES_URL))
+                    customField("homepage", GITHUB_URL)
+                }
+    
+                kotlinOptions.apply {
+                    // outputFile = "$buildDir/js/packages/${project.name}/kotlin/${project.name}-js.js"
+                    moduleKind = moduleKind0
+                    sourceMap = true
+                    sourceMapEmbedSources = "always"
+                }
+            }
+    
+    
+            compilations["test"].kotlinOptions.apply {
+                moduleKind = moduleKind0
+                metaInfo = true
+                sourceMap = true
             }
         }
         

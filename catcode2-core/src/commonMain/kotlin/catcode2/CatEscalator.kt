@@ -1,43 +1,9 @@
 package catcode2
 
-import kotlin.js.ExperimentalJsExport
-import kotlin.js.JsExport
 import kotlin.js.JsName
 import kotlin.jvm.JvmStatic
 
-
-/**
- * 猫猫码特殊字符转义器。
- *
- * 当一个猫猫码于普通文本混合时，
- * 对于普通文本中所出现的猫猫码需要使用的特殊符号，便需要进行转义，否则可能会导致最终的解析结果不正确。
- *
- * 例如
- * ```
- * 猫猫码 [CAT:foo] 的开始符为 &#91;。
- * ```
- *
- * 则可以解析为三段：
- * - 普通文本: `"猫猫码 "`
- * - 猫猫码文本: `"[CAT:foo]"`
- * - 普通文本: `" 的开始符为 [。"`
- *
- *
- * |  源  |  转义  |
- * |-----|-------|
- * |  `&`   |   `&amp;`   |
- * |  `[`   |   `&#91;`   |
- * |  `]`   |   `&#93;`   |
- * |  `'\t'`   |   `&#09;`   |
- * |  `'\r'`   |   `&#10;`   |
- * |  `'\n'`   |   `&#13;`   |
- * |  `=`   |   `&#61;`   |
- * |  `,`   |   `&#44;`   |
- *
- * 其中，对于 `=` 和 `,` 的转义规则仅存在于猫猫码内的属性值中。
- *
- */
-public object CatEscalator {
+internal object CatEscalatorInternalBaseImpl {
     private const val DECODE_PREFIX: Char = '&'
     private const val AND_VALUE: Char = '&'
     private const val DECODE_SUFFIX: Char = ';'
@@ -113,26 +79,23 @@ public object CatEscalator {
     /**
      * 根据指定字符，得到它应当被转义为的结果。如果无需转义则得到null。
      */
-    @JvmStatic @JsName("getTextEncode")
-    public fun getTextEncode(value: Char): String? = TEXT_ENCODE_MAP[value]
+    fun getTextEncode(value: Char): String? = TEXT_ENCODE_MAP[value]
+    
     
     /**
      * 根据指定字符串，得到它转义前的结果。如果无需转义则得到null。
      */
-    @JvmStatic @JsName("getTextDecode")
-    public fun getTextDecode(value: String): Char? = TEXT_DECODE_MAP[value]
+    fun getTextDecode(value: String): Char? = TEXT_DECODE_MAP[value]
     
     /**
      * 根据指定字符，得到它应当被转义为的结果。如果无需转义则得到null。
      */
-    @JvmStatic @JsName("getParamEncode")
-    public fun getParamEncode(value: Char): String? = PARAM_ENCODE_MAP[value]
+    fun getParamEncode(value: Char): String? = PARAM_ENCODE_MAP[value]
     
     /**
      * 根据指定字符串，得到它转义前的结果。如果无需转义则得到null。
      */
-    @JvmStatic @JsName("getParamDecode")
-    public fun getParamDecode(value: String): Char? = PARAM_DECODE_MAP[value]
+    fun getParamDecode(value: String): Char? = PARAM_DECODE_MAP[value]
     
     private fun getTextDecodeByCodeValue(code: Long): Char = TEXT_DECODE_CODE_VALUE_MAP[code]
     private fun getParamDecodeByCodeValue(code: Long): Char = PARAM_DECODE_CODE_VALUE_MAP[code]
@@ -158,16 +121,14 @@ public object CatEscalator {
     /**
      * 将 [text] 根据转义标准进行转义，例如将 `&` 被转义为 `&amp;`。
      */
-    @JvmStatic
-    public fun encodeText(text: String): String = buildString(text.length) {
+    fun encodeText(text: String): String = buildString(text.length) {
         walkEncoded(text, ::getTextEncode, ::append)
     }
     
     /**
      * 将 [text] 根据转义标准进行转义，例如将 `&` 被转义为 `&amp;`。
      */
-    @JvmStatic
-    public fun encodeParam(text: String): String = buildString(text.length) {
+    fun encodeParam(text: String): String = buildString(text.length) {
         walkEncoded(text, ::getParamEncode, ::append)
     }
     
@@ -237,16 +198,101 @@ public object CatEscalator {
     /**
      * 将 [text] 转为转义前的内容, 例如将 `&amp;` 转为 `&`。
      */
-    @JvmStatic
-    public fun decodeText(text: String): String =
+    fun decodeText(text: String): String =
         buildString(text.length) { walkDecoded(text, ::getTextDecodeByCodeValue, ::append) }
     
     /**
      * 将 [text] 转为转义前的内容, 例如将 `&amp;` 转为 `&`。
      */
-    @JvmStatic
-    public fun decodeParam(text: String): String =
+    fun decodeParam(text: String): String =
         buildString(text.length) { walkDecoded(text, ::getParamDecodeByCodeValue, ::append) }
+    
+}
+
+/**
+ * 猫猫码特殊字符转义器。
+ *
+ * 当一个猫猫码于普通文本混合时，
+ * 对于普通文本中所出现的猫猫码需要使用的特殊符号，便需要进行转义，否则可能会导致最终的解析结果不正确。
+ *
+ * 例如
+ * ```
+ * 猫猫码 [CAT:foo] 的开始符为 &#91;。
+ * ```
+ *
+ * 则可以解析为三段：
+ * - 普通文本: `"猫猫码 "`
+ * - 猫猫码文本: `"[CAT:foo]"`
+ * - 普通文本: `" 的开始符为 [。"`
+ *
+ *
+ * |  源  |  转义  |
+ * |-----|-------|
+ * |  `&`   |   `&amp;`   |
+ * |  `[`   |   `&#91;`   |
+ * |  `]`   |   `&#93;`   |
+ * |  `'\t'`   |   `&#09;`   |
+ * |  `'\r'`   |   `&#10;`   |
+ * |  `'\n'`   |   `&#13;`   |
+ * |  `=`   |   `&#61;`   |
+ * |  `,`   |   `&#44;`   |
+ *
+ * 其中，对于 `=` 和 `,` 的转义规则仅存在于猫猫码内的属性值中。
+ *
+ */
+public expect object CatEscalator {
+    // 0009 0003
+    
+    /**
+     * 根据指定字符，得到它应当被转义为的结果。如果无需转义则得到null。
+     */
+    @JvmStatic
+    public fun getTextEncode(value: Char): String?
+    
+    /**
+     * 根据指定字符串，得到它转义前的结果。如果无需转义则得到null。
+     */
+    @JvmStatic
+    @JsName("getTextDecode")
+    public fun getTextDecode(value: String): Char?
+    
+    /**
+     * 根据指定字符，得到它应当被转义为的结果。如果无需转义则得到null。
+     */
+    @JvmStatic
+    @JsName("getParamEncode")
+    public fun getParamEncode(value: Char): String?
+    
+    /**
+     * 根据指定字符串，得到它转义前的结果。如果无需转义则得到null。
+     */
+    @JvmStatic
+    public fun getParamDecode(value: String): Char?
+    
+    
+    /**
+     * 将 [text] 根据转义标准进行转义，例如将 `&` 被转义为 `&amp;`。
+     */
+    @JvmStatic
+    public fun encodeText(text: String): String
+    
+    /**
+     * 将 [text] 根据转义标准进行转义，例如将 `&` 被转义为 `&amp;`。
+     */
+    @JvmStatic
+    public fun encodeParam(text: String): String
+    
+    /**
+     * 将 [text] 转为转义前的内容, 例如将 `&amp;` 转为 `&`。
+     */
+    @JvmStatic
+    public fun decodeText(text: String): String
+    
+    /**
+     * 将 [text] 转为转义前的内容, 例如将 `&amp;` 转为 `&`。
+     */
+    @JvmStatic
+    public fun decodeParam(text: String): String
     
 }
 

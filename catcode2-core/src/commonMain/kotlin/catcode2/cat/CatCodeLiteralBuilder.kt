@@ -1,29 +1,10 @@
-@file:JvmName("Cats")
-@file:JvmMultifileClass
-
 package catcode2.cat
 
 import catcode2.*
 import kotlin.js.JsName
-import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic
-
-/**
- * 通过 [CatCodeLiteralBuilder] 构建一个catcode字符串。
- */
-@JvmOverloads
-@JsName("buildCatLiteral")
-public inline fun buildCatLiteral(
-    type: String,
-    head: String = CAT_HEAD,
-    appendable: Appendable = StringBuilder(),
-    block: CatCodeLiteralBuilder.() -> Unit,
-): String {
-    return CatCodeLiteralBuilder.of(type, head, appendable).apply(block).build()
-}
-
 
 /**
  * 用于直接构建 CatCode 字符串地构建器。

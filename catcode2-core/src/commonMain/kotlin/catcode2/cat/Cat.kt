@@ -1,5 +1,6 @@
 package catcode2.cat
 
+import kotlin.js.JsExport
 import kotlin.js.JsName
 
 
@@ -32,6 +33,7 @@ import kotlin.js.JsName
  *
  * @author ForteScarlet
  */
+@JsExport
 public interface Cat {
     
     /**
@@ -69,6 +71,13 @@ public interface Cat {
     /**
      * 得到当前猫猫码中的全部键。
      */
+    @Suppress("NON_EXPORTABLE_TYPE")
+    @JsName("_keys")
     public val keys: Set<String>
     
+    /**
+     * 得到当前猫猫码中的全部键。
+     */
+    @JsName("keys")
+    public val keysArray: Array<String> get() = keys.toTypedArray()
 }

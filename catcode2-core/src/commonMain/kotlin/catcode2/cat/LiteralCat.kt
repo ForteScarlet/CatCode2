@@ -113,6 +113,20 @@ public inline fun buildCat(type: String, head: String = CAT_HEAD, block: CatCode
 
 
 /**
+ * 通过 [CatCodeLiteralBuilder] 构建一个catcode字符串。
+ */
+@JvmOverloads
+@JsName("buildCatLiteral")
+public inline fun buildCatLiteral(
+    type: String,
+    head: String = CAT_HEAD,
+    appendable: Appendable = StringBuilder(),
+    block: CatCodeLiteralBuilder.() -> Unit,
+): String {
+    return CatCodeLiteralBuilder.of(type, head, appendable).apply(block).build()
+}
+
+/**
  * [Cat] 的构建器。
  */
 public class CatCodeBuilder private constructor(private val head: String, private val type: String) :

@@ -5,7 +5,13 @@ plugins {
 }
 
 kotlin {
+    
     sourceSets {
+        all {
+            languageSettings {
+                optIn("kotlin.js.ExperimentalJsExport")
+            }
+        }
         getByName("jsTest") {
             dependencies {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.0")
