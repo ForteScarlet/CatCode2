@@ -13,7 +13,7 @@ env:
   OSSRH_PASSWORD: ${{ secrets.OSS_PASSWORD }}
   CATCODE2_RELEASE: true
   CATCODE2_CI: true
-  GRADLE_OPTS: "-Xmx8G -Dfile.encoding=UTF-8"
+  GRADLE_OPTS: "-Xmx8G -XX:MaxPermSize=2G -Dfile.encoding=UTF-8"
 
 jobs:
   test-build-publish:
@@ -58,9 +58,10 @@ jobs:
             --info
             --warning-mode all
             -x test
-            -Pkotlin.daemon.jvmargs="-Xmx8g -Dfile.encoding=UTF-8"
-            -Porg.gradle.jvmargs="-Xmx8g -Dfile.encoding=UTF-8"
-            -Porg.gradle.workers.max=8
+            --build-cache
+            -Pkotlin.daemon.jvmargs="-Xmx8g -XX:MaxPermSize=2g -Dfile.encoding=UTF-8"
+            -Porg.gradle.jvmargs="-Xmx8g -XX:MaxPermSize=2g -Dfile.encoding=UTF-8"
+            -Porg.gradle.workers.max=16
             -Porg.gradle.parallel=true
 
       - name: Upload build artifacts
@@ -79,9 +80,9 @@ jobs:
             --info
             --warning-mode all
             -x test
-            -Pkotlin.daemon.jvmargs="-Xmx8G -Dfile.encoding=UTF-8"
-            -Porg.gradle.jvmargs="-Xmx8G -Dfile.encoding=UTF-8"
-            -Porg.gradle.workers.max=8
+            -Pkotlin.daemon.jvmargs="-Xmx8G -XX:MaxPermSize=2g -Dfile.encoding=UTF-8"
+            -Porg.gradle.jvmargs="-Xmx8G -XX:MaxPermSize=2g -Dfile.encoding=UTF-8"
+            -Porg.gradle.workers.max=16
             -Porg.gradle.parallel=true
 
 
