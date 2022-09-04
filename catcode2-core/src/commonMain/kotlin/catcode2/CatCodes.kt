@@ -158,9 +158,13 @@ public inline fun requireCatCode(
     return codeValue
 }
 
-//
-@PublishedApi
-internal fun checkCatCodeLoosely(codeValue: String): Boolean {
+/**
+ * 更宽松地校验 [codeValue] 是否大概率为一个猫猫码字符串。
+ *
+ * [checkCatCodeLoosely] 只会检测 [codeValue] 的长度（应该 >=5），以及是否被 [CAT_PREFIX] 和 [CAT_SUFFIX] 包裹。
+ *
+ */
+public fun checkCatCodeLoosely(codeValue: String): Boolean {
     // [a:b]
     if (codeValue.length < 5) return false
     return codeValue.first() == CAT_PREFIX && codeValue.last() == CAT_SUFFIX
@@ -169,6 +173,31 @@ internal fun checkCatCodeLoosely(codeValue: String): Boolean {
 
 /**
  * 解析一个猫猫码字符串中的所有属性, 包括 `head`、`type` 和所有的属性键值对。
+ *
+ * Kotlin
+ * ```kotlin
+ * walkCatCode(
+ *     codeValue = "[CAT:foo,bar=tar,name=forte]",
+ *     decodeValue = true,
+ *     perceiveHead = { head -> /* ... */ },
+ *     perceiveType = { type -> /* ... */ },
+ * ) { key, value ->
+ *    // ...
+ * }
+ * ```
+ *
+ * JS
+ * ```js
+ * catcode2.walkCatCode(
+ *    "[CAT:foo,bar=tar,name=forte]",
+ *    true,
+ *    (head) => { /* ... */ },
+ *    (type) => { /* ... */ },
+ *    (key, value) => { /* ... */ }
+ * )
+ * ```
+ *
+ * Java请使用 [walk][walk4J]。
  *
  * @param codeValue 进行解析的catcode字符串
  * @param perceiveHead 得到被解析的head。将会是第一个被触发的perceive函数，应当至少被触发一次
@@ -179,13 +208,13 @@ internal fun checkCatCodeLoosely(codeValue: String): Boolean {
  * @throws IllegalArgumentException 当一个属性切割符 [CAT_PROPERTIES_SEPARATOR] 后面无法寻得有效键值对（缺少键值切割符 [CAT_PROPERTY_SEPARATOR] 时）
  */
 @OptIn(ExperimentalContracts::class)
-@JvmOverloads
+@JvmName("walk")
 @JsName("walkCatCode")
 public inline fun walkCatCode(
     codeValue: String,
     decodeValue: Boolean = true,
-    perceiveHead: (String) -> Unit,
-    perceiveType: (String) -> Unit,
+    perceiveHead: (String) -> Unit = {},
+    perceiveType: (String) -> Unit = {},
     crossinline perceiveProperty: (key: String, value: String) -> Unit,
 ) {
     contract {
@@ -351,7 +380,7 @@ internal inline fun walkCatCodePropertiesInlineLooselyInternal(
 @JvmName("walkProperties")
 @JsName("walkCatCodeProperties")
 @JvmOverloads
-public fun walkCatCodeProperties(codeValue: String, decodeValue: Boolean = true, walker: CatCodePropertiesWalker) {
+public fun walkCatCodeProperties(codeValue: String, decodeValue: Boolean = true, walker: CatCodeKeyValueWalker) {
     walkCatCodePropertiesLoosely(requireCatCode(codeValue), decodeValue, walker)
 }
 
@@ -364,15 +393,14 @@ public fun walkCatCodeProperties(codeValue: String, decodeValue: Boolean = true,
 public fun walkCatCodePropertiesLoosely(
     codeValue: String,
     decodeValue: Boolean = true,
-    walker: CatCodePropertiesWalker,
+    walker: CatCodeKeyValueWalker,
 ) {
     walkCatCodePropertiesInlineLoosely(codeValue, decodeValue, walker::walk)
 }
 
-/**
- * 用于遍历CatCode的properties的函数接口，相当于 `(String, String) -> Unit`。
- */
-public fun interface CatCodePropertiesWalker {
+// 对Js不友好, 对Jvm友好
+@Deprecated("No.")
+public fun interface CatCodeKeyValueWalker {
     public fun walk(key: String, value: String)
 }
 
