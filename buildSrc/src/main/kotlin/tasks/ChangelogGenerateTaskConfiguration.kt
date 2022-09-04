@@ -9,7 +9,7 @@ import prop
 import java.io.File
 
 
-fun Project.registerChangelogGenerateTask() = tasks.register("generateChangelog") {
+fun Project.changelogGenerateTask() = tasks.register("generateChangelog") {
     group = "changelog"
     
     logger.info("============================================================")

@@ -1,5 +1,4 @@
-import tasks.registerChangelogGenerateTask
-import tasks.registerNpmPublishTask
+import tasks.changelogGenerateTask
 
 plugins {
     id("catcode2.nexus-publish")
@@ -46,8 +45,6 @@ subprojects {
 
 
 
-registerJsCopyTask()
+jsCopyTask()
 
-registerChangelogGenerateTask()
-
-registerNpmPublishTask()
+changelogGenerateTask()

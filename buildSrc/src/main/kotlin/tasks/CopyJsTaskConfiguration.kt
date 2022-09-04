@@ -3,7 +3,7 @@ import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.tasks.Copy
 import org.gradle.kotlin.dsl.register
 
-fun Project.registerJsCopyTask() = tasks.register<Copy>("copyJsFileToSharedLibs") {
+fun Project.jsCopyTask() = tasks.register<Copy>("copyJsFileToSharedLibs") {
     group = "build"
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     

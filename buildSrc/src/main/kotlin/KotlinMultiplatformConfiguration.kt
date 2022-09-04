@@ -7,6 +7,7 @@ import org.gradle.kotlin.dsl.getting
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.mpp.SharedLibrary
+import tasks.npmPublishTask
 
 private const val GITHUB_URL = "https://github.com/ForteScarlet/CatCode2"
 private const val GIT_URL = "git+https://github.com/ForteScarlet/CatCode2.git"
@@ -41,13 +42,31 @@ fun Project.configMultiplatform(
             browser()
             nodejs()
             binaries.library()
-    
+            
             // moduleKind0 = "umd"
             val moduleKind0 = "commonjs"
             
             compilations["main"].apply {
                 packageJson {
                     name = project.name
+                    
+                    val currentVersion = version
+                    
+                    if (currentVersion.endsWith("snapshot", true)) {
+                        // if snapshot, use timestamp
+                        // snapshot.length = 8
+                        version = currentVersion.dropLast(8) + System.currentTimeMillis()
+                    }
+                    
+                    // rename: @catcode2/name-suffix
+                    
+                    val currentName = name
+                    val prefix = "${rootProject.name}-"
+                    if (currentName.startsWith(prefix)) {
+                        name = "@${rootProject.name}/${currentName.drop(prefix.length)}"
+                    }
+                    
+                    
                     customField("repository", mapOf("type" to "git", "url" to GIT_URL))
                     customField("description", project.description?.toString() ?: "")
                     customField(
@@ -60,7 +79,7 @@ fun Project.configMultiplatform(
                     customField("bugs", mapOf("url" to GITHUB_ISSUES_URL))
                     customField("homepage", GITHUB_URL)
                 }
-    
+                
                 kotlinOptions.apply {
                     outputFile = "$buildDir/js/packages/${project.name}/kotlin/${project.name}"
                     moduleKind = moduleKind0
@@ -68,8 +87,8 @@ fun Project.configMultiplatform(
                     sourceMapEmbedSources = "always"
                 }
             }
-    
-    
+            
+            
             compilations["test"].kotlinOptions.apply {
                 moduleKind = moduleKind0
                 metaInfo = true
@@ -128,6 +147,7 @@ fun Project.configMultiplatform(
     }
     
     sharedLibsCopyTask()
+    npmPublishTask()
 }
 
 internal fun org.gradle.api.Project.`kotlin`(configure: Action<org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension>): Unit =
