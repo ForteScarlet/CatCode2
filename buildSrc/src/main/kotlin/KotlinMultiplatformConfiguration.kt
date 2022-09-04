@@ -62,7 +62,7 @@ fun Project.configMultiplatform(
                 }
     
                 kotlinOptions.apply {
-                    // outputFile = "$buildDir/js/packages/${project.name}/kotlin/${project.name}-js.js"
+                    outputFile = "$buildDir/js/packages/${project.name}/kotlin/${project.name}"
                     moduleKind = moduleKind0
                     sourceMap = true
                     sourceMapEmbedSources = "always"
