@@ -29,12 +29,13 @@ jobs:
           distribution: 'temurin'
           java-version: '8'
 
+      #
       - uses: actions/setup-node@v3
         with:
           node-version: 16
           cache: 'npm'
+          cache-dependency-path: kotlin-js-store/yarn.lock
           registry-url: 'https://registry.npmjs.org'
-
 
       - name: Gradle Publish To Npm
         uses: gradle/gradle-build-action@v2
