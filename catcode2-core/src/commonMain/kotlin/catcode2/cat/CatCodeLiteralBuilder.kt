@@ -1,6 +1,7 @@
 package catcode2.cat
 
 import catcode2.*
+import kotlin.js.JsExport
 import kotlin.js.JsName
 import kotlin.jvm.JvmName
 import kotlin.jvm.JvmOverloads

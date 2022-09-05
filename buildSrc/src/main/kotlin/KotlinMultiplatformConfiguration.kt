@@ -94,10 +94,23 @@ fun Project.configMultiplatform(
                 }
             }
             
+            val exceptJvmCommonMain = create("exceptJvmCommonMain") {
+                dependsOn(commonMain)
+            }
+            
+            val exceptJvmCommonTest = create("exceptJvmCommonTest") {
+                dependsOn(commonTest)
+            }
+            
+            getByName("jsMain") {
+                dependsOn(exceptJvmCommonMain)
+            }
+            
             getByName("jvmTest") {
                 dependencies {
                     implementation(kotlin("test-junit5"))
                 }
+                dependsOn(exceptJvmCommonTest)
             }
             
             getByName("jsTest") {
@@ -108,14 +121,17 @@ fun Project.configMultiplatform(
             
             val nativeCommonMain = create("nativeCommonMain") {
                 dependsOn(commonMain)
+                dependsOn(exceptJvmCommonMain)
             }
             val nativeCommonTest = create("nativeCommonTest") {
                 dependsOn(commonTest)
+                dependsOn(exceptJvmCommonTest)
             }
             val notIn = setOf(
                 "commonMain", "commonTest",
                 "jvmMain", "jvmTest",
                 "jsMain", "jsTest",
+                "exceptJvmCommonMain", "exceptJvmCommonTest",
                 "nativeCommonMain", "nativeCommonTest",
             )
             

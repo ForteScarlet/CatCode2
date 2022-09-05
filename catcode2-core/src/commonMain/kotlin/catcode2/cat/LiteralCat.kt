@@ -4,6 +4,7 @@
 package catcode2.cat
 
 import catcode2.*
+import kotlin.js.JsExport
 import kotlin.js.JsName
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
@@ -64,6 +65,7 @@ private class LiteralCat(
  */
 @JvmName("of")
 @JsName("catOfLiteral")
+@JsExport
 public fun catOf(codeValue: String): Cat {
     lateinit var head: String
     lateinit var headCoordinate: IntRange
@@ -93,7 +95,6 @@ public fun catOf(codeValue: String): Cat {
  * 提供属性集并构建一个 [Cat]。
  */
 @JvmName("of")
-@JsName("catOfProperties")
 public fun catOf(type: String, head: String = CAT_HEAD, properties: Map<String, String>): Cat {
     return buildCat(type, head) {
         properties.forEach { (k, v) ->
