@@ -44,6 +44,7 @@ fun Project.configMultiplatform(
             
             browser()
             nodejs()
+            
             binaries.library()
             
             // moduleKind0 = "umd"
@@ -51,18 +52,8 @@ fun Project.configMultiplatform(
             
             compilations["main"].apply {
                 packageJson {
-                    // rename: @catcode2/name-suffix
                     name = jsPackageJsonName
                     version = jsVersion
-                    
-                    // val currentVersion = version
-                    //
-                    // if (currentVersion.endsWith("snapshot", true)) {
-                    //     if snapshot, use timestamp
-                        // version = "$currentVersion.${System.currentTimeMillis()}"
-                    // }
-    
-                    
                     
                     customField("repository", mapOf("type" to "git", "url" to GIT_URL))
                     customField("description", project.description?.toString() ?: "")
