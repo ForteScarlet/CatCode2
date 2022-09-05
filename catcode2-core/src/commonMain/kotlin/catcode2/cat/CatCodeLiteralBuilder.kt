@@ -20,7 +20,7 @@ public class CatCodeLiteralBuilder private constructor(private val appendable: A
     override fun set(key: String, value: String, encode: Boolean): CatCodeLiteralBuilder = apply {
         checkFinish()
         appendable.append(CAT_PROPERTIES_SEPARATOR).append(key).append(CAT_PROPERTY_SEPARATOR)
-        appendable.append(if (encode) CatEscalator.encodeParam(value) else value)
+        appendable.append(if (encode) encodeCatParam(value) else value)
     }
     
     override fun key(key: String): KeyHandle {

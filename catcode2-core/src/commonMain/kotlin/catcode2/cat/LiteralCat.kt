@@ -81,7 +81,7 @@ public fun catOf(codeValue: String): Cat {
             { s, c, e ->
                 val key = codeValue.substring(s, c)
                 val value = codeValue.substring(c + 1, e)
-                put(key, CatEscalator.decodeParam(value))
+                put(key, decodeCatParam(value))
             }
         )
     }
@@ -146,7 +146,7 @@ public class CatCodeBuilder private constructor(private val head: String, privat
      * ```
      */
     override fun set(key: String, value: String, encode: Boolean): CatCodeBuilder = apply {
-        properties[key] = if (encode) CatEscalator.encodeParam(value) else value
+        properties[key] = if (encode) encodeCatParam(value) else value
     }
     
     /**
@@ -240,7 +240,7 @@ private fun catOrBuilder(
         append(type)
         properties.forEach { (k, v) ->
             append(CAT_PROPERTIES_SEPARATOR)
-            append(k).append(CAT_PROPERTY_SEPARATOR).append(CatEscalator.encodeParam(v))
+            append(k).append(CAT_PROPERTY_SEPARATOR).append(encodeCatParam(v))
         }
         append(CAT_SUFFIX)
     }

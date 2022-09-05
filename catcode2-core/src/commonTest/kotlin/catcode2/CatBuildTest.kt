@@ -55,7 +55,7 @@ class CatBuildTest {
         }
         
         assertTrue { catLiteral1.startsWith("[CAT:at,") }
-        assertTrue { CatEscalator.getParamEncode('&')!! in catLiteral1 }
+        assertTrue { getCatParamEncode('&')!! in catLiteral1 }
         
         val catLiteral2 = buildCatLiteral("at") {
             key("code") value "123"

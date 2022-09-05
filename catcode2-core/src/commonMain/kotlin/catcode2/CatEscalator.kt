@@ -1,215 +1,84 @@
+@file:JvmName("CatEscalator")
+@file:JsExport
+
 package catcode2
 
+import kotlin.js.JsExport
 import kotlin.js.JsName
-import kotlin.jvm.JvmStatic
+import kotlin.jvm.JvmName
 
-internal object CatEscalatorInternalBaseImpl {
-    private const val DECODE_PREFIX: Char = '&'
-    private const val AND_VALUE: Char = '&'
-    private const val DECODE_SUFFIX: Char = ';'
-    
-    private val TEXT_ENCODE_MAP = mapOf(
-        '&' to "&amp;",
-        '[' to "&#91;",
-        ']' to "&#93;",
-        '\t' to "&#09;",
-        '\r' to "&#10;",
-        '\n' to "&#13;",
-    )
-    
-    private val PARAM_ENCODE_MAP = mapOf(
-        '&' to "&amp;",
-        '[' to "&#91;",
-        ']' to "&#93;",
-        '=' to "&#61;",
-        ',' to "&#44;",
-        '\t' to "&#09;",
-        '\r' to "&#10;",
-        '\n' to "&#13;",
-    )
-    
-    private val TEXT_DECODE_MAP = mapOf(
-        "&amp;" to '&',
-        "&#91;" to '[',
-        "&#93;" to ']',
-        "&#09;" to '\t',
-        "&#10;" to '\r',
-        "&#13;" to '\n',
-    )
-    
-    private val PARAM_DECODE_MAP = mapOf(
-        "&amp;" to '&',
-        "&#91;" to '[',
-        "&#93;" to ']',
-        "&#61;" to '=',
-        "&#44;" to ',',
-        "&#09;" to '\t',
-        "&#10;" to '\r',
-        "&#13;" to '\n',
-    )
-    
-    private val TEXT_DECODE_CODE_VALUE_MAP = LongCharMap(
-        "91".toKeyValue() to '[',
-        "93".toKeyValue() to ']',
-        "09".toKeyValue() to '\t',
-        "10".toKeyValue() to '\r',
-        "13".toKeyValue() to '\n',
-    )
-    
-    private val PARAM_DECODE_CODE_VALUE_MAP = LongCharMap(
-        "91".toKeyValue() to '[',
-        "93".toKeyValue() to ']',
-        "61".toKeyValue() to '=',
-        "44".toKeyValue() to ',',
-        "09".toKeyValue() to '\t',
-        "10".toKeyValue() to '\r',
-        "13".toKeyValue() to '\n',
-    )
-    
-    private fun String.toKeyValue(): Long {
-        return toKeyValue(this[0], this[1])
-    }
-    
-    private fun toKeyValue(v1: Char, v2: Char): Long {
-        return (v1.code.toLong() shl 32) or v2.code.toLong()
-    }
-    
-    // 0009 0003
-    
-    /**
-     * 根据指定字符，得到它应当被转义为的结果。如果无需转义则得到null。
-     */
-    fun getTextEncode(value: Char): String? = TEXT_ENCODE_MAP[value]
-    
-    
-    /**
-     * 根据指定字符串，得到它转义前的结果。如果无需转义则得到null。
-     */
-    fun getTextDecode(value: String): Char? = TEXT_DECODE_MAP[value]
-    
-    /**
-     * 根据指定字符，得到它应当被转义为的结果。如果无需转义则得到null。
-     */
-    fun getParamEncode(value: Char): String? = PARAM_ENCODE_MAP[value]
-    
-    /**
-     * 根据指定字符串，得到它转义前的结果。如果无需转义则得到null。
-     */
-    fun getParamDecode(value: String): Char? = PARAM_DECODE_MAP[value]
-    
-    private fun getTextDecodeByCodeValue(code: Long): Char = TEXT_DECODE_CODE_VALUE_MAP[code]
-    private fun getParamDecodeByCodeValue(code: Long): Char = PARAM_DECODE_CODE_VALUE_MAP[code]
-    
-    
-    /**
-     * 依次遍历 [text] 进行转义后的字符。
-     * 当遇到特殊字符转移后，会依次walk转义结果，例如当 `&` 被转义为 `&amp;`，
-     * 则会依次遍历这5个字符。
-     *
-     */
-    private inline fun walkEncoded(text: String, encodeGetter: (Char) -> String?, walk: (Char) -> Unit) {
-        for (c in text) {
-            val encode = encodeGetter(c)
-            if (encode == null) {
-                walk(c)
-            } else {
-                encode.forEach(walk)
-            }
-        }
-    }
-    
-    /**
-     * 将 [text] 根据转义标准进行转义，例如将 `&` 被转义为 `&amp;`。
-     */
-    fun encodeText(text: String): String = buildString(text.length) {
-        walkEncoded(text, ::getTextEncode, ::append)
-    }
-    
-    /**
-     * 将 [text] 根据转义标准进行转义，例如将 `&` 被转义为 `&amp;`。
-     */
-    fun encodeParam(text: String): String = buildString(text.length) {
-        walkEncoded(text, ::getParamEncode, ::append)
-    }
-    
-    private inline fun String.walk(startIndex: Int, endIndex: Int, walk: (Char) -> Unit) {
-        for (i in startIndex until endIndex) {
-            walk(this[i])
-        }
-    }
-    
-    /**
-     * 依次遍历 [text] 转为转义前的内容, 例如将 `&amp;` 转为 `&`。
-     */
-    private inline fun walkDecoded(text: String, decodeGetter: (Long) -> Char, walk: (Char) -> Unit) {
-        val lastIndex = text.lastIndex
-        var next = 0
-        while (next <= lastIndex) {
-            // &?
-            val preIndex = text.indexOf(DECODE_PREFIX, next)
-            if (preIndex < 0) {
-                // no more.
-                text.walk(next, text.length, walk)
-                break
-            }
-            
-            text.walk(next, preIndex, walk)
-            
-            // ;
-            val sufIndex = preIndex + 4
-            // the last
-            if (sufIndex > lastIndex) {
-                text.walk(preIndex, text.length, walk)
-                break
-            }
-            
-            next = sufIndex + 1
-            
-            if (text[sufIndex] == DECODE_SUFFIX) {
-                val c1 = text[preIndex + 1]
-                val c2 = text[preIndex + 2]
-                val c3 = text[preIndex + 3]
-                
-                // other number
-                if (c1 == '#') {
-                    // &#ab;
-                    // find number
-                    val target = decodeGetter(toKeyValue(c2, c3))
-                    if (target != Char.MIN_VALUE) {
-                        // decoded, append it.
-                        walk(target)
-                        continue
-                    }
-                }
-                
-                // &amp;
-                if (c1 == 'a' && c2 == 'm' && c3 == 'p') {
-                    // append '&'
-                    walk(AND_VALUE)
-                    continue
-                }
-            }
-            
-            // just append.
-            text.walk(preIndex, sufIndex, walk)
-        }
-    }
-    
-    /**
-     * 将 [text] 转为转义前的内容, 例如将 `&amp;` 转为 `&`。
-     */
-    fun decodeText(text: String): String =
-        buildString(text.length) { walkDecoded(text, ::getTextDecodeByCodeValue, ::append) }
-    
-    /**
-     * 将 [text] 转为转义前的内容, 例如将 `&amp;` 转为 `&`。
-     */
-    fun decodeParam(text: String): String =
-        buildString(text.length) { walkDecoded(text, ::getParamDecodeByCodeValue, ::append) }
-    
+private const val DECODE_PREFIX: Char = '&'
+private const val AND_VALUE: Char = '&'
+private const val DECODE_SUFFIX: Char = ';'
+
+private val TEXT_ENCODE_MAP = mapOf(
+    '&' to "&amp;",
+    '[' to "&#91;",
+    ']' to "&#93;",
+    '\t' to "&#09;",
+    '\r' to "&#10;",
+    '\n' to "&#13;",
+)
+
+private val PARAM_ENCODE_MAP = mapOf(
+    '&' to "&amp;",
+    '[' to "&#91;",
+    ']' to "&#93;",
+    '=' to "&#61;",
+    ',' to "&#44;",
+    '\t' to "&#09;",
+    '\r' to "&#10;",
+    '\n' to "&#13;",
+)
+
+private val TEXT_DECODE_MAP = mapOf(
+    "&amp;" to '&',
+    "&#91;" to '[',
+    "&#93;" to ']',
+    "&#09;" to '\t',
+    "&#10;" to '\r',
+    "&#13;" to '\n',
+)
+
+private val PARAM_DECODE_MAP = mapOf(
+    "&amp;" to '&',
+    "&#91;" to '[',
+    "&#93;" to ']',
+    "&#61;" to '=',
+    "&#44;" to ',',
+    "&#09;" to '\t',
+    "&#10;" to '\r',
+    "&#13;" to '\n',
+)
+
+private val TEXT_DECODE_CODE_VALUE_MAP = LongCharMap(
+    "91".toKeyValue() to '[',
+    "93".toKeyValue() to ']',
+    "09".toKeyValue() to '\t',
+    "10".toKeyValue() to '\r',
+    "13".toKeyValue() to '\n',
+)
+
+private val PARAM_DECODE_CODE_VALUE_MAP = LongCharMap(
+    "91".toKeyValue() to '[',
+    "93".toKeyValue() to ']',
+    "61".toKeyValue() to '=',
+    "44".toKeyValue() to ',',
+    "09".toKeyValue() to '\t',
+    "10".toKeyValue() to '\r',
+    "13".toKeyValue() to '\n',
+)
+
+private fun String.toKeyValue(): Long {
+    return toKeyValue(this[0], this[1])
 }
 
-/**
+private fun toKeyValue(v1: Char, v2: Char): Long {
+    return (v1.code.toLong() shl 32) or v2.code.toLong()
+}
+
+
+/*
  * 猫猫码特殊字符转义器。
  *
  * 当一个猫猫码于普通文本混合时，
@@ -240,61 +109,147 @@ internal object CatEscalatorInternalBaseImpl {
  * 其中，对于 `=` 和 `,` 的转义规则仅存在于猫猫码内的属性值中。
  *
  */
-public expect object CatEscalator {
-    // 0009 0003
-    
-    /**
-     * 根据指定字符，得到它应当被转义为的结果。如果无需转义则得到null。
-     */
-    @JvmStatic
-    public fun getTextEncode(value: Char): String?
-    
-    /**
-     * 根据指定字符串，得到它转义前的结果。如果无需转义则得到null。
-     */
-    @JvmStatic
-    @JsName("getTextDecode")
-    public fun getTextDecode(value: String): Char?
-    
-    /**
-     * 根据指定字符，得到它应当被转义为的结果。如果无需转义则得到null。
-     */
-    @JvmStatic
-    @JsName("getParamEncode")
-    public fun getParamEncode(value: Char): String?
-    
-    /**
-     * 根据指定字符串，得到它转义前的结果。如果无需转义则得到null。
-     */
-    @JvmStatic
-    public fun getParamDecode(value: String): Char?
-    
-    
-    /**
-     * 将 [text] 根据转义标准进行转义，例如将 `&` 被转义为 `&amp;`。
-     */
-    @JvmStatic
-    public fun encodeText(text: String): String
-    
-    /**
-     * 将 [text] 根据转义标准进行转义，例如将 `&` 被转义为 `&amp;`。
-     */
-    @JvmStatic
-    public fun encodeParam(text: String): String
-    
-    /**
-     * 将 [text] 转为转义前的内容, 例如将 `&amp;` 转为 `&`。
-     */
-    @JvmStatic
-    public fun decodeText(text: String): String
-    
-    /**
-     * 将 [text] 转为转义前的内容, 例如将 `&amp;` 转为 `&`。
-     */
-    @JvmStatic
-    public fun decodeParam(text: String): String
-    
+
+
+/**
+ * 根据指定字符，得到它应当被转义为的结果。如果无需转义则得到null。
+ */
+@Suppress("NON_EXPORTABLE_TYPE")
+@JsName("getCatTextEncodeChar")
+public fun getCatTextEncode(value: Char): String? = TEXT_ENCODE_MAP[value]
+
+
+/**
+ * 根据指定字符串，得到它转义前的结果。如果无需转义则得到null。
+ */
+@Suppress("NON_EXPORTABLE_TYPE")
+@JsName("getCatTextDecodeChar")
+public fun getCatTextDecode(value: String): Char? = TEXT_DECODE_MAP[value]
+
+/**
+ * 根据指定字符，得到它应当被转义为的结果。如果无需转义则得到null。
+ */
+@Suppress("NON_EXPORTABLE_TYPE")
+@JsName("getCatParamEncodeChar")
+public fun getCatParamEncode(value: Char): String? = PARAM_ENCODE_MAP[value]
+
+/**
+ * 根据指定字符串，得到它转义前的结果。如果无需转义则得到null。
+ */
+@Suppress("NON_EXPORTABLE_TYPE")
+@JsName("getCatParamDecodeChar")
+public fun getCatParamDecode(value: String): Char? = PARAM_DECODE_MAP[value]
+
+private fun getTextDecodeByCodeValue(code: Long): Char = TEXT_DECODE_CODE_VALUE_MAP[code]
+private fun getParamDecodeByCodeValue(code: Long): Char = PARAM_DECODE_CODE_VALUE_MAP[code]
+
+
+/**
+ * 依次遍历 [text] 进行转义后的字符。
+ * 当遇到特殊字符转移后，会依次walk转义结果，例如当 `&` 被转义为 `&amp;`，
+ * 则会依次遍历这5个字符。
+ *
+ */
+private inline fun walkEncoded(text: String, encodeGetter: (Char) -> String?, walk: (Char) -> Unit) {
+    for (c in text) {
+        val encode = encodeGetter(c)
+        if (encode == null) {
+            walk(c)
+        } else {
+            encode.forEach(walk)
+        }
+    }
 }
+
+/**
+ * 将 [text] 根据转义标准进行转义，例如将 `&` 被转义为 `&amp;`。
+ */
+public fun encodeCatText(text: String): String = buildString(text.length) {
+    walkEncoded(text, ::getCatTextEncode, ::append)
+}
+
+/**
+ * 将 [text] 根据转义标准进行转义，例如将 `&` 被转义为 `&amp;`。
+ */
+public fun encodeCatParam(text: String): String = buildString(text.length) {
+    walkEncoded(text, ::getCatParamEncode, ::append)
+}
+
+private inline fun String.walk(startIndex: Int, endIndex: Int, walk: (Char) -> Unit) {
+    for (i in startIndex until endIndex) {
+        walk(this[i])
+    }
+}
+
+/**
+ * 依次遍历 [text] 转为转义前的内容, 例如将 `&amp;` 转为 `&`。
+ */
+private inline fun walkDecoded(text: String, decodeGetter: (Long) -> Char, walk: (Char) -> Unit) {
+    val lastIndex = text.lastIndex
+    var next = 0
+    while (next <= lastIndex) {
+        // &?
+        val preIndex = text.indexOf(DECODE_PREFIX, next)
+        if (preIndex < 0) {
+            // no more.
+            text.walk(next, text.length, walk)
+            break
+        }
+        
+        text.walk(next, preIndex, walk)
+        
+        // ;
+        val sufIndex = preIndex + 4
+        // the last
+        if (sufIndex > lastIndex) {
+            text.walk(preIndex, text.length, walk)
+            break
+        }
+        
+        next = sufIndex + 1
+        
+        if (text[sufIndex] == DECODE_SUFFIX) {
+            val c1 = text[preIndex + 1]
+            val c2 = text[preIndex + 2]
+            val c3 = text[preIndex + 3]
+            
+            // other number
+            if (c1 == '#') {
+                // &#ab;
+                // find number
+                val target = decodeGetter(toKeyValue(c2, c3))
+                if (target != Char.MIN_VALUE) {
+                    // decoded, append it.
+                    walk(target)
+                    continue
+                }
+            }
+            
+            // &amp;
+            if (c1 == 'a' && c2 == 'm' && c3 == 'p') {
+                // append '&'
+                walk(AND_VALUE)
+                continue
+            }
+        }
+        
+        // just append.
+        text.walk(preIndex, sufIndex, walk)
+    }
+}
+
+/**
+ * 将 [text] 转为转义前的内容, 例如将 `&amp;` 转为 `&`。
+ */
+public fun decodeCatText(text: String): String =
+    buildString(text.length) { walkDecoded(text, ::getTextDecodeByCodeValue, ::append) }
+
+/**
+ * 将 [text] 转为转义前的内容, 例如将 `&amp;` 转为 `&`。
+ */
+public fun decodeCatParam(text: String): String =
+    buildString(text.length) { walkDecoded(text, ::getParamDecodeByCodeValue, ::append) }
+
 
 
 /**
@@ -308,6 +263,7 @@ public expect object CatEscalator {
  * 其中, 存放的 value char 的 [Char.code] 不可为 [Char.MIN_VALUE] —— `Char(0)` 将会用于标记为'未应用'，作用同 `null`。
  *
  */
+@Suppress("NON_EXPORTABLE_TYPE")
 private class LongCharMap(
     vararg pairs: Pair<Long, Char>,
     /**

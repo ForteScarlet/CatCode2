@@ -48,13 +48,24 @@ class CatCodesTest {
         assertTrue { pairs3["code"] == "123" }
     }
     
-    // @Test
-    // fun catcodeTest() {
-    //     val cat = LiteralCat.of("[CAT:at,code=123,name=forte]")
-    //     println(cat)
-    //     println(cat.toString("CQ"))
-    //     println(cat["code"])
-    //     println(cat["name"])
-    // }
+    
+    @Test
+    fun catCodeWalkTest() {
+        val code = "[CAT:foo,tar=bar]"
+        
+        lateinit var head: String
+        
+        walkCatCode(code, true,
+            perceiveHead = {
+                head = it
+                return@walkCatCode
+            }
+        ) { k, v ->
+            error("no here.")
+        }
+    
+        println("head: $head")
+        
+    }
     
 }
