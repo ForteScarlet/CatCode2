@@ -18,6 +18,9 @@ fun Project.configMultiplatform(
     sharedLibConfigure: SharedLibrary.() -> Unit = {},
     andMore: (KotlinMultiplatformExtension.() -> Unit)? = null,
 ) {
+    
+    val isSnapshot = !isRelease()
+    
     kotlin {
         explicitApi()
         
@@ -48,22 +51,15 @@ fun Project.configMultiplatform(
             
             compilations["main"].apply {
                 packageJson {
-                    name = project.name
+                    // rename: @catcode2/name-suffix
+                    name = jsPackageJsonName
                     
                     val currentVersion = version
                     
                     if (currentVersion.endsWith("snapshot", true)) {
                         // if snapshot, use timestamp
                         // snapshot.length = 8
-                        version = currentVersion.dropLast(8) + System.currentTimeMillis()
-                    }
-                    
-                    // rename: @catcode2/name-suffix
-                    
-                    val currentName = name
-                    val prefix = "${rootProject.name}-"
-                    if (currentName.startsWith(prefix)) {
-                        name = "@${rootProject.name}/${currentName.drop(prefix.length)}"
+                        version = "$currentVersion.${System.currentTimeMillis()}"
                     }
                     
                     
@@ -156,3 +152,16 @@ internal fun org.gradle.api.Project.`kotlin`(configure: Action<org.jetbrains.kot
 
 internal fun org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension.`sourceSets`(configure: Action<NamedDomainObjectContainer<KotlinSourceSet>>): Unit =
     (this as org.gradle.api.plugins.ExtensionAware).extensions.configure("sourceSets", configure)
+
+
+public val Project.jsPackageJsonName: String
+    get() {
+        // @catcode2/module
+        val prefix = "${rootProject.name}-"
+        val projectName = project.name
+        if (projectName.startsWith(prefix)) {
+            return "@${rootProject.name}/${projectName.drop(prefix.length)}"
+        } else {
+            return "@${rootProject.name}/$projectName"
+        }
+    }
