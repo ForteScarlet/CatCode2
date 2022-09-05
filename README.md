@@ -110,17 +110,8 @@ implementation("love.forte.catcode2:catcode2-serialization-kotlinx:$catcode2_ver
 
 ### JS
 
-**NPM**
+参考 [README-JS](README-JS.md) 。
 
-> _目前暂时没有上传到NPM。别问为什么，问就是还没捯饬明白。_
-
-**直接导入**
-
-前往 [releases](https://github.com/ForteScarlet/CatCode2/releases) 
-选择你需要的版本，并在其文件列表中找到所需依赖文件 (例如 `kotlin.js`、 `kotlinx-serialization-kotlinx-serialization-core-js-legacy.js` 等) 和你所需要的JS文件，
-例如 `catcode2-core.js`。
-
-> _如果你在 [releases](https://github.com/ForteScarlet/CatCode2/releases) 中没有找到你想要的 `*.js` 文件，那么可能就是我忘了上传了。_
 
 ### Native
 

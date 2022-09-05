@@ -11,7 +11,7 @@ env:
 
 jobs:
   publish-npm:
-    name: Publish to npm
+    name: Publish To Npm
 #    strategy:
 #      matrix:
 #        os: [ ubuntu-latest, macos-latest, windows-latest ]
@@ -29,13 +29,15 @@ jobs:
           distribution: 'temurin'
           java-version: '8'
 
-      #
+      # https://github.com/marketplace/actions/setup-node-js-environment
       - uses: actions/setup-node@v3
         with:
           node-version: 16
           cache: 'npm'
           cache-dependency-path: kotlin-js-store/yarn.lock
           registry-url: 'https://registry.npmjs.org'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Gradle Publish To Npm
         uses: gradle/gradle-build-action@v2

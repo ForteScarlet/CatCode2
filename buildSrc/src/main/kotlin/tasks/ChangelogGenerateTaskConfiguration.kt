@@ -1,6 +1,8 @@
 package tasks
 
 import Version
+import jsPackageJsonName
+import jsVersion
 import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
@@ -17,17 +19,24 @@ fun Project.changelogGenerateTask() = tasks.register("generateChangelog") {
     val tagName = prop(tagNameProperty) ?: "v${Version.VERSION}"
     
     val moduleTargetsList = mutableListOf<ModuleRepoTargets>()
+    val jsTargets = mutableListOf<Project>()
     
     project.subprojects.forEach {
         logger.info("project: {}", it)
         // publishable
         val publishingExtensions = it.extensions.findByType<org.gradle.api.publish.PublishingExtension>()
         
-        val repoTargets = mutableListOf<MavenRepoTarget>()
+        val repoTargets = mutableListOf<RepoTarget>()
         publishingExtensions?.generateModuleRepo(it, repoTargets::add)
         
         if (repoTargets.isNotEmpty()) {
             moduleTargetsList.add(ModuleRepoTargets(it.name, repoTargets))
+        }
+        
+        
+        
+        if (it.tasks.findByName("publishToNpm") != null) {
+            jsTargets.add(it)
         }
     }
     
@@ -42,10 +51,16 @@ fun Project.changelogGenerateTask() = tasks.register("generateChangelog") {
             """.trimIndent()
             )
             
+            append("**Maven**\n\n")
+            
             moduleTargetsList.forEach { targets ->
                 targets.generateTable(::append)
                 append("\n\n")
             }
+            
+            append("**NPM**\n\n")
+            
+            jsTargets.generateNpmTable(::append)
             
             append("</details>\n")
         }
@@ -58,7 +73,7 @@ fun Project.changelogGenerateTask() = tasks.register("generateChangelog") {
 }
 
 
-private inline fun PublishingExtension.generateModuleRepo(project: Project, generated: (MavenRepoTarget) -> Unit) {
+private inline fun PublishingExtension.generateModuleRepo(project: Project, generated: (RepoTarget) -> Unit) {
     val logger = project.logger
     logger.info("PublishingExtension: {}", this)
     logger.info("publication: {}", publications)
@@ -67,7 +82,7 @@ private inline fun PublishingExtension.generateModuleRepo(project: Project, gene
             return@forEach
         }
         
-        generated(MavenRepoTarget(it.groupId, it.artifactId, it.version))
+        generated(RepoTarget(it.groupId, it.artifactId, it.version))
     }
     
     
@@ -94,7 +109,7 @@ private fun Project.writeToChangelog(text: String, tag: String) {
         ?.also { customFile ->
             
             file.bufferedWriter().use { writer ->
-                customFile.bufferedReader().use {  reader ->
+                customFile.bufferedReader().use { reader ->
                     reader.copyTo(writer)
                 }
                 writer.newLine()
@@ -108,7 +123,7 @@ private fun Project.writeToChangelog(text: String, tag: String) {
     file.appendText(text)
 }
 
-private data class MavenRepoTarget(val groupId: String, val artifactId: String, val version: String) {
+private data class RepoTarget(val groupId: String, val artifactId: String, val version: String) {
     val groupPath = groupId.replace('.', '/')
     
     fun toRepo1Url(): String = "https://repo1.maven.org/maven2/$groupPath/$artifactId/$version"
@@ -118,19 +133,33 @@ private data class MavenRepoTarget(val groupId: String, val artifactId: String, 
 }
 
 
-private inline fun repoTargetsToTableString(targets: Iterable<MavenRepoTarget>, onString: (String) -> Unit) {
+private inline fun repoTargetsToTableString(targets: Iterable<RepoTarget>, onString: (String) -> Unit) {
     onString("| **模块** | **repo1.maven** | **search.maven** |\n")
     onString("|---------|-----------------|------------------|\n")
     
     targets.forEach { target ->
-        val linkDisplay = "${target.artifactId}: v${target.version}"
+        val linkDisplay = "${target.artifactId}:\tv${target.version}"
         onString("| ${target.artifactId} | [$linkDisplay](${target.toRepo1Url()}) | [$linkDisplay](${target.tomavenSerachUrl()}) |\n")
     }
 }
 
-private data class ModuleRepoTargets(val module: String, val targets: List<MavenRepoTarget>) {
+private data class ModuleRepoTargets(val module: String, val targets: List<RepoTarget>) {
     inline fun generateTable(onGenerate: (String) -> Unit) {
         onGenerate("**$module**\n\n")
         repoTargetsToTableString(targets, onGenerate)
     }
+}
+
+private inline fun List<Project>.generateNpmTable(onString: (String) -> Unit) {
+    onString("| **模块** | **npm packages** |\n")
+    onString("|---------|-----------------|\n")
+    
+    forEach {
+        val packageName = it.jsPackageJsonName
+        val version = it.jsVersion
+        
+        onString("| ${it.name} | [$packageName:\t$version](https://www.npmjs.com/package/$packageName/v/$version) |\n")
+    }
+    
+    
 }

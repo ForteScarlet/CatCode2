@@ -19,8 +19,6 @@ fun Project.configMultiplatform(
     andMore: (KotlinMultiplatformExtension.() -> Unit)? = null,
 ) {
     
-    val isSnapshot = !isRelease()
-    
     kotlin {
         explicitApi()
         
@@ -36,6 +34,8 @@ fun Project.configMultiplatform(
                 useJUnitPlatform()
             }
         }
+        
+        var jsVersion = this@configMultiplatform.jsVersion
         
         // The IR backend does not make Kotlin declarations available to JavaScript by default at all.
         // To make Kotlin declarations visible to JavaScript, they must be annotated with @JsExport.
@@ -53,14 +53,15 @@ fun Project.configMultiplatform(
                 packageJson {
                     // rename: @catcode2/name-suffix
                     name = jsPackageJsonName
+                    version = jsVersion
                     
-                    val currentVersion = version
-                    
-                    if (currentVersion.endsWith("snapshot", true)) {
-                        // if snapshot, use timestamp
-                        // snapshot.length = 8
-                        version = "$currentVersion.${System.currentTimeMillis()}"
-                    }
+                    // val currentVersion = version
+                    //
+                    // if (currentVersion.endsWith("snapshot", true)) {
+                    //     if snapshot, use timestamp
+                        // version = "$currentVersion.${System.currentTimeMillis()}"
+                    // }
+    
                     
                     
                     customField("repository", mapOf("type" to "git", "url" to GIT_URL))
@@ -165,3 +166,7 @@ public val Project.jsPackageJsonName: String
             return "@${rootProject.name}/$projectName"
         }
     }
+
+
+public val Project.jsVersion: String
+    get() = if (isRelease()) version.toString() else version.toString() + "." + Version.currentTimeValue
