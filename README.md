@@ -15,7 +15,12 @@
     <a href="https://repo1.maven.org/maven2/love/forte/catcode2/" target="_blank" >
         <img src="https://img.shields.io/maven-central/v/love.forte.catcode2/catcode2-core" alt="maven-central" />
     </a>
-
+    <a href="https://www.npmjs.com/package/@catcode2/core" target="_blank" >
+            <img src="https://img.shields.io/npm/v/@catcode2/core/latest" alt="catcode2/core-latest" />
+    </a>
+    <a href="https://www.npmjs.com/package/@catcode2/core" target="_blank" >
+        <img src="https://img.shields.io/npm/v/@catcode2/core/snapshot" alt="catcode2/core-snapshot" />
+    </a>
 </div>
 
 *****
@@ -60,72 +65,19 @@
 并且 **CatCode2** 提供了基于 [**kotlinx-serialization**](https://github.com/Kotlin/kotlinx.serialization) 的多平台序列化模块支持，
 你可以借助 **kotlinx-serialization** 来自定义结构来描述你的猫猫码、序列化/反序列化你的猫猫码。
 
-## 安装
+## 应用
 
-### JVM
+### [核心库](catcode2-core)
 
-**Gradle Groovy**
+[核心库](catcode2-core) 提供了针对猫猫码字符串的解析、读写与封装的核心基础功能，是最主要也是最基本的模块。
 
-```groovy
-// 核心库
-implementation 'love.forte.catcode2:catcode2-core:$catcode2_version'
+前往 [核心库模块](catcode2-core) 获取更多信息。
 
-// ktx序列化库
-implementation 'love.forte.catcode2:catcode2-serialization-kotlinx:$catcode2_version'
-```
+### [序列化库](catcode2-serialization)
 
-**Gradle Kotlin DSL**
+**CatCode2** 提供了一些允许通过实体类作为载体来对猫猫码进行描述的模块，
+例如对 [**kotlinx-serialization**](https://github.com/Kotlin/kotlinx.serialization) 的实现。
 
-```kotlin
-// 核心库
-implementation("love.forte.catcode2:catcode2-core:$catcode2_version")
-
-// ktx序列化库
-implementation("love.forte.catcode2:catcode2-serialization-kotlinx:$catcode2_version")
-```
-
-> 在 `Gradle` 中，如果是直接导入而不使用Kotlin，则需要在坐标名候面追加平台后缀，例如 `-jvm`，参考下述 `Maven` 坐标。
-
-**Maven**
-
-```xml
-<dependencies>
-    <!-- 核心库 -->
-    <dependency>
-        <groupId>love.forte.catcode2</groupId>
-        <artifactId>catcode2-core-jvm</artifactId>
-        <version>${catcode2.version}</version>
-        <scope>compile</scope>
-    </dependency>
-    
-    <!-- ktx序列化库 -->
-    <dependency>
-        <groupId>love.forte.catcode2</groupId>
-        <artifactId>catcode2-serialization-kotlinx-jvm</artifactId>
-        <version>${catcode2.version}</version>
-        <scope>compile</scope>
-    </dependency>
-</dependencies>
-```
-
-### JS
-
-**npm**
-
-> npm package see: https://www.npmjs.com/package/@catcode2/core
-
-```shell
-npm i @catcode2/core
-```
-
-_参考 [core/README-JS](catcode2-core/README-JS.md)_
-
-
-### Native
-
-前往 [releases](https://github.com/ForteScarlet/CatCode2/releases)
-选择你需要的版本，并在其文件列表中找到你所需要某平台下的动态链文件和 `.h` 头文件，
-例如 `catcode2_core_mingwX64.dll` 和 `catcode2_core_api.h` 。
-
+前往 [序列化模块](catcode2-serialization) 获取更多信息。
 
 

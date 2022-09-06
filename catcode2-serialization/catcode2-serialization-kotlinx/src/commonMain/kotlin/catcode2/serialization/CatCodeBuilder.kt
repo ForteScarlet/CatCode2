@@ -2,6 +2,7 @@ package catcode2.serialization
 
 import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.SerializersModule
+import kotlin.js.JsExport
 
 
 /**
@@ -10,10 +11,12 @@ import kotlinx.serialization.modules.SerializersModule
  *
  * @author ForteScarlet
  */
+@JsExport
 public class CatCodeBuilder {
     /**
      * 配置 [SerializersModule]。
      */
+    @Suppress("NON_EXPORTABLE_TYPE")
     public var serializersModule: SerializersModule = EmptySerializersModule()
     
     // region configuration properties

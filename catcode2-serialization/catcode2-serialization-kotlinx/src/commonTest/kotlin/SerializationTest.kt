@@ -1,4 +1,6 @@
 import catcode2.serialization.CatCode
+import catcode2.serialization.CatCodeTypeName
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
@@ -29,13 +31,11 @@ class SerializationTest {
         val original = listOf(Foo.Bar(15), Foo.Tar("forte"))
         
         val code = CatCode.encodeToString(ListSerializer(Foo.serializer()), original)
-    
+        
         println(code)
         
         
     }
-    
-    
 }
 
 @Serializable

@@ -73,15 +73,15 @@ public inline fun requireCatCode(
 
 /**
  * 更宽松地校验 [codeValue] 是否大概率为一个猫猫码字符串。
- * [checkCatCodeLoosely] 只会检测 [codeValue] 的长度（应该 >=5），以及是否被 [CAT_PREFIX] 和 [CAT_SUFFIX] 包裹。
+ * [checkCatCodeLeniently] 只会检测 [codeValue] 的长度（应该 >=5），以及是否被 [CAT_PREFIX] 和 [CAT_SUFFIX] 包裹。
  *
- * [checkCatCodeLoosely] 相比较于 [checkCatCode] 更加迅速，但同时牺牲了准确性，
- * 因此 [checkCatCodeLoosely] 不能保证 [codeValue] 是一个cat code。
+ * [checkCatCodeLeniently] 相比较于 [checkCatCode] 更加迅速，但同时牺牲了准确性，
+ * 因此 [checkCatCodeLeniently] 不能保证 [codeValue] 是一个cat code。
  *
- * 例如字符串 `[ bc]` 可以通过 [checkCatCodeLoosely] 的检测，但是很明显它并不是一个cat code。
+ * 例如字符串 `[ bc]` 可以通过 [checkCatCodeLeniently] 的检测，但是很明显它并不是一个cat code。
  *
  */
-public fun checkCatCodeLoosely(codeValue: String): Boolean {
+public fun checkCatCodeLeniently(codeValue: String): Boolean {
     // [a:b]
     if (codeValue.length < 5) return false
     return codeValue.first() == CAT_PREFIX && codeValue.last() == CAT_SUFFIX
@@ -90,13 +90,13 @@ public fun checkCatCodeLoosely(codeValue: String): Boolean {
 /**
  * 更宽松地校验 [codeValue] 是否大概率为一个猫猫码字符串。
  *
- * [checkCatCodeLoosely] 只会检测 [codeValue] 的长度（应该 >=5），以及是否被 [CAT_PREFIX] 和 [CAT_SUFFIX] 包裹。
+ * [checkCatCodeLeniently] 只会检测 [codeValue] 的长度（应该 >=5），以及是否被 [CAT_PREFIX] 和 [CAT_SUFFIX] 包裹。
  *
  */
-public inline fun requireCatCodeLoosely(
+public inline fun requireCatCodeLeniently(
     codeValue: String,
     lazyMessage: () -> String = { "code value '$codeValue' not a catcode" },
 ): String {
-    require(checkCatCodeLoosely(codeValue), lazyMessage)
+    require(checkCatCodeLeniently(codeValue), lazyMessage)
     return codeValue
 }
