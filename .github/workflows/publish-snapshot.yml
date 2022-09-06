@@ -88,10 +88,7 @@ jobs:
 
   publish-npm:
     name: Publish To Npm
-    needs: [test-build-publish]
-    #    strategy:
-#      matrix:
-#        os: [ ubuntu-latest, macos-latest, windows-latest ]
+#    needs: [test-build-publish]
     runs-on: ubuntu-latest
     steps:
       # 检出仓库代码
