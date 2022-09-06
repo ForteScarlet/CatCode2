@@ -3,12 +3,10 @@
 
 package catcode2
 
-import catcode2.annotation.Api4Jvm
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 import kotlin.js.JsExport
-import kotlin.js.JsName
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 import kotlin.jvm.JvmOverloads
@@ -25,10 +23,11 @@ import kotlin.jvm.JvmSynthetic
  * walkCatCode(
  *     codeValue = "[CAT:foo,bar=tar,name=forte]",
  *     decodeValue = true,
- *     perceiveHead = { head -> /* ... */ },
- *     perceiveType = { type -> /* ... */ },
+ *     perceiveHead = { head -> /* ... */ WalkResult.CONTINUE },
+ *     perceiveType = { type -> /* ... */ WalkResult.CONTINUE },
  * ) { key, value ->
  *    // ...
+ *    WalkResult.CONTINUE
  * }
  * ```
  *
@@ -37,10 +36,20 @@ import kotlin.jvm.JvmSynthetic
  * catcode2.walkCatCode(
  *    "[CAT:foo,bar=tar,name=forte]",
  *    true,
- *    (head) => { /* ... */ },
- *    (type) => { /* ... */ },
- *    (key, value) => { /* ... */ }
+ *    (head) => { /* ... */ return catcode2.WalkResult.CONTINUE },
+ *    (type) => { /* ... */ return catcode2.WalkResult.CONTINUE },
+ *    (key, value) => { /* ... */ return catcode2.WalkResult.CONTINUE }
  * )
+ * ```
+ *
+ * ```java
+ * CatCodes.walkCatCode(
+ *    "[CAT:foo,bar=tar,name=forte]",
+ *    true,
+ *    head -> { /* ... */ return WalkResult.CONTINUE; },
+ *    type -> { /* ... */ return WalkResult.CONTINUE; },
+ *    (key, value) -> { /* ... */ return WalkResult.CONTINUE; }
+ * );
  * ```
  *
  * @param catCode 进行解析的catcode字符串
@@ -50,17 +59,17 @@ import kotlin.jvm.JvmSynthetic
  *
  * @throws IllegalArgumentException 当 [catCode] 可能不符合标准结构时。
  * @throws IllegalArgumentException 当一个属性切割符 [CAT_PROPERTIES_SEPARATOR] 后面无法寻得有效键值对（缺少键值切割符 [CAT_PROPERTY_SEPARATOR] 时）
+ *
  */
 @OptIn(ExperimentalContracts::class)
-@JvmSynthetic // TODO for Java
-@JsName("walkCatCode")
+@JvmName("walkCatCode")
 @JsExport
 public inline fun walkCatCode(
     catCode: String,
     decodeValue: Boolean = true,
-    crossinline perceiveHead: (String) -> Unit = {},
-    crossinline perceiveType: (String) -> Unit = {},
-    crossinline perceiveProperty: (key: String, value: String) -> Unit,
+    crossinline perceiveHead: (String) -> WalkResult? = { WalkResult.CONTINUE },
+    crossinline perceiveType: (String) -> WalkResult? = { WalkResult.CONTINUE },
+    crossinline perceiveProperty: (key: String, value: String) -> WalkResult?,
 ) {
     contract {
         callsInPlace(perceiveHead, InvocationKind.AT_MOST_ONCE)
@@ -89,6 +98,85 @@ public inline fun walkCatCode(
     )
 }
 
+/**
+ * 解析一个猫猫码字符串中的所有属性, 包括 `head`、`type` 和所有的属性键值对。
+ *
+ * Kotlin
+ * ```kotlin
+ * walkCatCodeContinuously(
+ *     codeValue = "[CAT:foo,bar=tar,name=forte]",
+ *     decodeValue = true,
+ *     perceiveHead = { head -> /* ... */ },
+ *     perceiveType = { type -> /* ... */ },
+ * ) { key, value ->
+ *    // ...
+ *    WalkResult.CONTINUE
+ * }
+ * ```
+ *
+ * JS
+ * ```js
+ * catcode2.walkCatCodeContinuously(
+ *    "[CAT:foo,bar=tar,name=forte]",
+ *    true,
+ *    (head) => { /* ... */ },
+ *    (type) => { /* ... */ },
+ *    (key, value) => { /* ... */ }
+ * )
+ * ```
+ *
+ * ```java
+ * CatCodes.walkCatCodeContinuously(
+ *    "[CAT:foo,bar=tar,name=forte]",
+ *    true,
+ *    head -> { /* ... */ return Unit.INSTANCE; },
+ *    type -> { /* ... */ return Unit.INSTANCE; },
+ *    (key, value) -> { /* ... */ return Unit.INSTANCE; }
+ * );
+ * ```
+ *
+ * @param catCode 进行解析的catcode字符串
+ * @param perceiveHead 得到被解析的head。将会是第一个被触发的perceive函数，应当至少被触发一次
+ * @param perceiveType 得到被解析的type。将会是第二个被触发的perceive函数，应当至少被触发一次
+ * @param perceiveProperty
+ *
+ * @throws IllegalArgumentException 当 [catCode] 可能不符合标准结构时。
+ * @throws IllegalArgumentException 当一个属性切割符 [CAT_PROPERTIES_SEPARATOR] 后面无法寻得有效键值对（缺少键值切割符 [CAT_PROPERTY_SEPARATOR] 时）
+ *
+ */
+@OptIn(ExperimentalContracts::class)
+@JvmName("walkCatCodeContinuously")
+@JsExport
+public inline fun walkCatCodeContinuously(
+    catCode: String,
+    decodeValue: Boolean = true,
+    crossinline perceiveHead: (String) -> Unit = { },
+    crossinline perceiveType: (String) -> Unit = { },
+    crossinline perceiveProperty: (key: String, value: String) -> Unit,
+) {
+    contract {
+        callsInPlace(perceiveHead, InvocationKind.AT_MOST_ONCE)
+        callsInPlace(perceiveType, InvocationKind.AT_MOST_ONCE)
+        callsInPlace(perceiveProperty, InvocationKind.UNKNOWN)
+    }
+    
+    walkCatCode(
+        catCode, decodeValue,
+        perceiveHead = {
+            perceiveHead(it)
+            WalkResult.CONTINUE
+        },
+        perceiveType = {
+            perceiveType(it)
+            WalkResult.CONTINUE
+            
+        },
+        perceiveProperty = { k, v ->
+            perceiveProperty(k, v)
+            WalkResult.CONTINUE
+        },
+    )
+}
 
 @PublishedApi
 internal inline fun String.targetCatCodeHead(
@@ -142,22 +230,36 @@ internal inline fun String.targetCatCodeType(
 @PublishedApi
 internal inline fun walkCatCodeInternal(
     catCode: String,
-    perceiveHead: (startIndex: Int, endIndex: Int) -> Unit,
-    perceiveType: (startIndex: Int, endIndex: Int) -> Unit,
-    perceiveProperty: (startIndex: Int, separatorIndex: Int, endIndex: Int) -> Unit,
+    perceiveHead: (startIndex: Int, endIndex: Int) -> WalkResult?,
+    perceiveType: (startIndex: Int, endIndex: Int) -> WalkResult?,
+    perceiveProperty: (startIndex: Int, separatorIndex: Int, endIndex: Int) -> WalkResult?,
 ) {
     if (!checkCatCodeLoosely(catCode)) throw IllegalArgumentException("codeValue '$catCode' is not a catcode: Not wrapped by '$CAT_PREFIX' and '$CAT_SUFFIX' or length < 5")
     
+    
     // find head
-    val headEndIndex = catCode.targetCatCodeHead(perceiveHead)
+    val headEndIndex = catCode.targetCatCodeHead(perceive = { s, e ->
+        if (perceiveHead(s, e) == WalkResult.STOP) {
+            return
+        }
+    })
+    
     
     // find type
     val typeEndIndex = catCode.targetCatCodeType(
         startIndex = headEndIndex,
-        perceive = perceiveType
+        perceive = { s, e ->
+            if (perceiveType(s, e) == WalkResult.STOP) {
+                return
+            }
+        }
     )
     
-    walkCatCodePropertiesInlineLooselyInternal(typeEndIndex, catCode, perceiveProperty)
+    walkCatCodePropertiesInlineLooselyInternal(typeEndIndex, catCode) { s, spi, e ->
+        if (perceiveProperty(s, spi, e) == WalkResult.STOP) {
+            return
+        }
+    }
 }
 
 
@@ -226,11 +328,62 @@ public fun getCatCodeTypeOrNull(catCode: String): String? {
     return type
 }
 
+/**
+ * 尝试依次遍历一个猫猫码字符串中的所有属性键值对。
+ *
+ * @throws IllegalArgumentException 当 [codeValue] 无法通过 [checkCatCode] 校验时。（see [requireCatCode]）
+ * @throws IllegalArgumentException 当一个属性切割符 [CAT_PROPERTIES_SEPARATOR] 后面无法寻得有效键值对（缺少键值切割符 [CAT_PROPERTY_SEPARATOR] 时）
+ *
+ * @see walkCatCodePropertiesLoosely
+ */
+@OptIn(ExperimentalContracts::class)
+@JsExport
+@JvmOverloads
+@JvmName("walkCatCodeProperties")
+public inline fun walkCatCodeProperties(
+    codeValue: String,
+    decodeValue: Boolean = true,
+    walk: (key: String, value: String) -> WalkResult?,
+) {
+    contract {
+        callsInPlace(walk, InvocationKind.UNKNOWN)
+    }
+    
+    walkCatCodePropertiesLoosely(requireCatCode(codeValue), decodeValue, walk)
+}
 
 /**
  * 尝试依次遍历一个猫猫码字符串中的所有属性键值对。
  *
- * 为了提供更低的损耗，[walkCatCodePropertiesInlineLoosely] 的遍历与检测**十分宽松**。对于 [codeValue] 的合规检测来说，
+ * @throws IllegalArgumentException 当 [codeValue] 无法通过 [checkCatCode] 校验时。（see [requireCatCode]）
+ * @throws IllegalArgumentException 当一个属性切割符 [CAT_PROPERTIES_SEPARATOR] 后面无法寻得有效键值对（缺少键值切割符 [CAT_PROPERTY_SEPARATOR] 时）
+ *
+ * @see walkCatCodePropertiesLoosely
+ */
+@OptIn(ExperimentalContracts::class)
+@JsExport
+@JvmOverloads
+@JvmName("walkCatCodePropertiesContinuously")
+public inline fun walkCatCodePropertiesContinuously(
+    codeValue: String,
+    decodeValue: Boolean = true,
+    walk: (key: String, value: String) -> Unit,
+) {
+    contract {
+        callsInPlace(walk, InvocationKind.UNKNOWN)
+    }
+    
+    walkCatCodePropertiesLoosely(requireCatCode(codeValue), decodeValue) { k, v ->
+        walk(k, v)
+        WalkResult.CONTINUE
+    }
+}
+
+
+/**
+ * 尝试依次遍历一个猫猫码字符串中的所有属性键值对。
+ *
+ * 为了提供更低的损耗，[walkCatCodePropertiesLoosely] 的遍历与检测**十分宽松**。对于 [codeValue] 的合规检测来说，
  * **只会**检测 [codeValue] 是否被 [`[`][CAT_PREFIX] 和 [`]`][CAT_SUFFIX] 前后包裹而不关心 `HEAD` 和 `TYPE`。
  *
  * 这种宽松地检测方式可能会使得一些类似下述格式的代码也能够被正常使用：
@@ -244,12 +397,13 @@ public fun getCatCodeTypeOrNull(catCode: String): String? {
  * @throws IllegalArgumentException 当一个属性切割符 [CAT_PROPERTIES_SEPARATOR] 后面无法寻得有效键值对（缺少键值切割符 [CAT_PROPERTY_SEPARATOR] 时）
  */
 @OptIn(ExperimentalContracts::class)
-@JvmSynthetic
-@JsName("walkCatCodePropertiesInlineLoosely")
-public inline fun walkCatCodePropertiesInlineLoosely(
+@JsExport
+@JvmOverloads
+@JvmName("walkCatCodePropertiesLoosely")
+public inline fun walkCatCodePropertiesLoosely(
     codeValue: String,
     decodeValue: Boolean = true,
-    walk: (key: String, value: String) -> Unit,
+    walk: (key: String, value: String) -> WalkResult?,
 ) {
     contract {
         callsInPlace(walk, InvocationKind.UNKNOWN)
@@ -270,17 +424,56 @@ public inline fun walkCatCodePropertiesInlineLoosely(
 }
 
 
+/**
+ * 尝试依次遍历一个猫猫码字符串中的所有属性键值对。
+ *
+ * 为了提供更低的损耗，[walkCatCodePropertiesLoosely] 的遍历与检测**十分宽松**。对于 [codeValue] 的合规检测来说，
+ * **只会**检测 [codeValue] 是否被 [`[`][CAT_PREFIX] 和 [`]`][CAT_SUFFIX] 前后包裹而不关心 `HEAD` 和 `TYPE`。
+ *
+ * 这种宽松地检测方式可能会使得一些类似下述格式的代码也能够被正常使用：
+ * - `[a=b,c=d]` (只会检测到 `c=d`)
+ * - `[ bc]`
+ * - `[,a=b,c=d]`
+ *
+ * 如果想要保证严谨性，请在使用前先通过 [checkCatCode] 或 [requireCatCode] 进行检测。
+ *
+ * @throws IllegalArgumentException 当 [codeValue] 不是被 [`[`][CAT_PREFIX] 和 [`]`][CAT_SUFFIX] 前后包裹时。
+ * @throws IllegalArgumentException 当一个属性切割符 [CAT_PROPERTIES_SEPARATOR] 后面无法寻得有效键值对（缺少键值切割符 [CAT_PROPERTY_SEPARATOR] 时）
+ */
+@OptIn(ExperimentalContracts::class)
+@JsExport
+@JvmOverloads
+@JvmName("walkCatCodePropertiesLooselyContinuously")
+public inline fun walkCatCodePropertiesLooselyContinuously(
+    codeValue: String,
+    decodeValue: Boolean = true,
+    walk: (key: String, value: String) -> Unit,
+) {
+    contract {
+        callsInPlace(walk, InvocationKind.UNKNOWN)
+    }
+    
+    return walkCatCodePropertiesLoosely(
+        codeValue, decodeValue
+    ) { k, v ->
+        walk(k, v)
+        WalkResult.CONTINUE
+    }
+}
+
 @PublishedApi
 internal inline fun walkCatCodePropertiesInlineLoosely0(
     startIndex0: Int,
     codeValue: String,
     valuePreprocess: (String) -> String,
-    walk: (key: String, value: String) -> Unit,
+    walk: (key: String, value: String) -> WalkResult?,
 ) {
     walkCatCodePropertiesInlineLooselyInternal(startIndex0, codeValue) { si, spi, ei ->
         val key = codeValue.substring(si, spi)
         val value = codeValue.substring(spi + 1, ei)
-        walk(key, valuePreprocess(value))
+        if (walk(key, valuePreprocess(value)) == WalkResult.STOP) {
+            return
+        }
     }
 }
 
@@ -316,36 +509,20 @@ internal inline fun walkCatCodePropertiesInlineLooselyInternal(
     }
 }
 
-
 /**
- * 遍历提供的 [codeValue] 中的全部键值对。
+ * 用于与 `walk` 相关的API中，作为控制流返回值使用。
  */
-@JvmName("walkProperties")
-@JsName("walkCatCodeProperties")
-@JvmOverloads
-public fun walkCatCodeProperties(codeValue: String, decodeValue: Boolean = true, walker: CatCodeKeyValueWalker) {
-    walkCatCodePropertiesLoosely(requireCatCode(codeValue), decodeValue, walker)
+@JsExport
+public enum class WalkResult {
+    /**
+     * 代表 **继续**。大多数情况下应当是默认的类型，代表继续后续流程或逻辑。
+     */
+    CONTINUE,
+    
+    // BREAK?
+    
+    /**
+     * 代表 **终止**。会立即停止walk行为，并抛弃后续所有的逻辑。
+     */
+    STOP
 }
-
-/**
- * 宽松的遍历提供的 [codeValue] 中的全部键值对。
- */
-@JvmName("walkPropertiesLoosely")
-@JsName("walkCatCodePropertiesLoosely")
-@JvmOverloads
-public fun walkCatCodePropertiesLoosely(
-    codeValue: String,
-    decodeValue: Boolean = true,
-    walker: CatCodeKeyValueWalker,
-) {
-    walkCatCodePropertiesInlineLoosely(codeValue, decodeValue, walker::walk)
-}
-
-// 对Js不友好, 对Jvm友好
-@Api4Jvm
-public fun interface CatCodeKeyValueWalker {
-    public fun walk(key: String, value: String)
-}
-
-
-

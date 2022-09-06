@@ -4,19 +4,18 @@
 package catcode2
 
 import kotlin.js.JsExport
-import kotlin.jvm.JvmInline
 import kotlin.jvm.JvmName
 
 @Suppress("RegExpRedundantEscape") // '\\]' for nodejs.
-private val CATCODE_CHECK_REGEX = Regex("\\[[a-zA-Z_.$]+:[a-zA-Z_.$]+(,.+=.*)*\\]")
+private val CATCODE_CHECK_REGEX = Regex("\\[[a-zA-Z_.$-]+:[a-zA-Z_.$-]+(,.+=.*)*\\]")
 
-private val HEAD_CHECK_REGEX = Regex("[a-zA-Z_.$]+")
+private val HEAD_CHECK_REGEX = Regex("[a-zA-Z_.$-]+")
 
 private val TYPE_CHECK_REGEX = HEAD_CHECK_REGEX
 
 /**
  * 校验 [head] 是否为一个标准的猫猫码head。
- * 即需要 [head] 匹配正则 `[a-zA-Z_.$]+`。
+ * 即需要 [head] 匹配正则 `[a-zA-Z_.$-]+`。
  */
 @JvmName("checkHead")
 public fun checkCatHead(head: String): Boolean = HEAD_CHECK_REGEX.matches(head)
@@ -36,7 +35,7 @@ public inline fun requireCatHead(
 }
 
 /**
- * 校验 [type] 是否为一个标准的猫猫码类型。即需要 [type] 匹配正则 `[a-zA-Z_.$]+`。
+ * 校验 [type] 是否为一个标准的猫猫码类型。即需要 [type] 匹配正则 `[a-zA-Z_.$-]+`。
  */
 @JvmName("checkType")
 public fun checkCatType(type: String): Boolean = TYPE_CHECK_REGEX.matches(type)
@@ -54,7 +53,7 @@ public inline fun requireCatType(
 }
 
 /**
- * 校验 [codeValue] 是否大概率为一个猫猫码字符串。即需要 [codeValue] 满足正则 `\\[[a-zA-Z_.$]+:[a-zA-Z_.$]+(,.+=.*)*\\]`。
+ * 校验 [codeValue] 是否大概率为一个猫猫码字符串。即需要 [codeValue] 满足正则 `\\[[a-zA-Z_.$-]+:[a-zA-Z_.$-]+(,.+=.*)*\\]`。
  */
 @JvmName("check")
 public fun checkCatCode(codeValue: String): Boolean = CATCODE_CHECK_REGEX.matches(codeValue)

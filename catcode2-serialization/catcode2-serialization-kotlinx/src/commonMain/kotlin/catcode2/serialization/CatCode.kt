@@ -2,11 +2,11 @@
 
 package catcode2.serialization
 
-import catcode2.CatEscalator
 import catcode2.cat.BaseCatCodeBuilder
 import catcode2.cat.CatCodeLiteralBuilder
+import catcode2.getCatParamEncode
 import catcode2.requireCatCode
-import catcode2.walkCatCodePropertiesInlineLoosely
+import catcode2.walkCatCodePropertiesLooselyContinuously
 import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.PolymorphicKind
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -40,7 +40,7 @@ public sealed class CatCode(
             requireCatCode(catcode)
         }
         
-        walkCatCodePropertiesInlineLoosely(catcode, walk = properties::set)
+        walkCatCodePropertiesLooselyContinuously(catcode, walk = properties::set)
         
         return deserializer.deserialize(CatCodeLiteralDecoder(this, deserializer.descriptor, properties))
     }
@@ -141,7 +141,7 @@ private class CatCodeLiteralEncoder(
     }
     
     override fun encodeTaggedChar(tag: String, value: Char) {
-        val encoded = CatEscalator.getParamEncode(value) ?: value.toString()
+        val encoded = getCatParamEncode(value) ?: value.toString()
         encode(tag, encoded, false)
     }
     

@@ -10,6 +10,7 @@ import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic
+import catcode2.cat.KeyHandle as BaseKeyHandle
 
 private class LiteralCat(
     private val literal: String,
@@ -76,14 +77,17 @@ public fun catOf(codeValue: String): Cat {
             { s, e ->
                 headCoordinate = s until e
                 head = codeValue.substring(s, e)
+                null
             },
             { s, e ->
                 type = codeValue.substring(s, e)
+                null
             },
             { s, c, e ->
                 val key = codeValue.substring(s, c)
                 val value = codeValue.substring(c + 1, e)
                 put(key, decodeCatParam(value))
+                null
             }
         )
     }
@@ -130,8 +134,11 @@ public inline fun buildCatLiteral(
 /**
  * [Cat] 的构建器。
  */
+@JsExport
 public class CatCodeBuilder private constructor(private val head: String, private val type: String) :
     BaseCatCodeBuilder<Cat, CatCodeBuilder> {
+    // [HEAD:TYPE]
+    private var capacity: Int = 3 + head.length + type.length
     private val properties = mutableMapOf<String, String>()
     private lateinit var currentKey: String
     private lateinit var handle: KeyHandleImpl
@@ -147,7 +154,9 @@ public class CatCodeBuilder private constructor(private val head: String, privat
      * ```
      */
     override fun set(key: String, value: String, encode: Boolean): CatCodeBuilder = apply {
-        properties[key] = if (encode) encodeCatParam(value) else value
+        val propertyValue = if (encode) encodeCatParam(value) else value
+        properties[key] = propertyValue
+        capacity += (2 + key.length + propertyValue.length)
     }
     
     /**
@@ -184,7 +193,7 @@ public class CatCodeBuilder private constructor(private val head: String, privat
      *
      *
      */
-    public interface KeyHandle : BaseCatCodeBuilder.KeyHandle<Cat, CatCodeBuilder> {
+    public interface KeyHandle : BaseKeyHandle<Cat, CatCodeBuilder> {
         /**
          * 为当前key设置一个value。如果 [value] 为null则跳过本次设置。
          *
@@ -207,7 +216,7 @@ public class CatCodeBuilder private constructor(private val head: String, privat
         }
     }
     
-    override fun build(): Cat = catOrBuilder(head, type, properties)
+    override fun build(): Cat = catOfBuilder(capacity, head, type, properties)
     
     public companion object {
         /**
@@ -226,22 +235,22 @@ public class CatCodeBuilder private constructor(private val head: String, privat
 /**
  * 构建一个 catcode.
  */
-private fun catOrBuilder(
-    head: String = CAT_HEAD, type: String, properties: Map<String, String>,
+private fun catOfBuilder(
+    capacity: Int, head: String, type: String, properties: Map<String, String>,
 ): LiteralCat {
-    require(requireCatHead(head).isNotEmpty()) { "head cannot be empty" }
-    require(requireCatType(type).isNotEmpty()) { "type cannot be empty" }
+    require(requireCatHead(head).isNotEmpty()) { "'head' cannot be empty" }
+    require(requireCatType(type).isNotEmpty()) { "'type' cannot be empty" }
+    
     
     val headCoordinate = 1..head.length
-    
-    val catcode = buildString(2 + properties.size * 4 + head.length + type.length) {
+    val catcode = buildString(capacity) {
         append(CAT_PREFIX)
         append(head)
         append(CAT_HEAD_SEPARATOR)
         append(type)
         properties.forEach { (k, v) ->
             append(CAT_PROPERTIES_SEPARATOR)
-            append(k).append(CAT_PROPERTY_SEPARATOR).append(encodeCatParam(v))
+            append(k).append(CAT_PROPERTY_SEPARATOR).append(v)
         }
         append(CAT_SUFFIX)
     }

@@ -30,8 +30,10 @@ fun Project.configMultiplatform(
                 }
             }
             withJava()
-            testRuns["test"].executionTask.configure {
-                useJUnitPlatform()
+            testRuns.all {
+                executionTask.configure {
+                    useJUnitPlatform()
+                }
             }
         }
         
