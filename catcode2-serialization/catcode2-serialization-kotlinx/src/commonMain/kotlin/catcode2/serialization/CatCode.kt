@@ -14,7 +14,6 @@ import kotlinx.serialization.descriptors.StructureKind
 import kotlinx.serialization.encoding.CompositeDecoder
 import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.SerializersModule
-import kotlin.js.JsName
 import kotlin.jvm.JvmName
 
 /**
@@ -259,8 +258,7 @@ private class CatCodeImpl(serializersModule: SerializersModule, configuration: C
  *
  */
 @JvmName("buildCatCode")
-@JsName("buildCatCode")
-public fun catCode(builder: CatCodeBuilderFunction): CatCode {
+public fun CatCode(builder: CatCodeBuilderFunction): CatCode {
     return CatCodeBuilder().apply {
         builder.apply { invoke() }
     }.buildToCatCode()

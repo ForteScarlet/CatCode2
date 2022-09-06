@@ -4,6 +4,7 @@ import catcode2.CAT_HEAD
 import catcode2.checkCatCode
 import catcode2.walkCatCodeProperties
 import catcode2.walkCatCodePropertiesLeniently
+import kotlin.js.JsExport
 import kotlin.jvm.JvmField
 
 
@@ -13,6 +14,7 @@ import kotlin.jvm.JvmField
  *
  * @author ForteScarlet
  */
+@JsExport
 public data class CatCodeConfiguration internal constructor(
     public val catHead: String = CAT_HEAD,
     public val classDiscriminator: String = "type",

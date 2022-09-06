@@ -1,6 +1,5 @@
 import catcode2.serialization.CatCode
 import catcode2.serialization.CatCodeTypeName
-import catcode2.serialization.catCode
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -32,34 +31,11 @@ class SerializationTest {
         val original = listOf(Foo.Bar(15), Foo.Tar("forte"))
         
         val code = CatCode.encodeToString(ListSerializer(Foo.serializer()), original)
-    
+        
         println(code)
         
         
     }
-    
-    @OptIn(ExperimentalSerializationApi::class)
-    @Serializable
-    @CatCodeTypeName("at")
-    data class At(val code: Long, val name: String)
-    
-    @Test
-    fun sample() {
-        val at = At(123456L, "forte")
-        
-        val catcode = catCode {
-            this.decodeEmptyAsNull
-        }.encodeToString(At.serializer(), at, "CQ")
-        
-        val newAt = CatCode.decodeFromString(At.serializer(), catcode)
-    
-        println(at)
-        println(catcode)
-        println(newAt)
-        
-        assertTrue { at == newAt }
-    }
-    
 }
 
 @Serializable
