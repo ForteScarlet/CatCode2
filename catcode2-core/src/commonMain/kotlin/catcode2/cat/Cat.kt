@@ -50,17 +50,18 @@ public interface Cat {
     public val type: String
     
     /**
-     * 提供一个 `head` 并得到当前猫猫码。
-     *
-     */
-    @JsName("toStringWithHead")
-    public fun toString(head: String = this.head): String
-    
-    /**
      * 得到当前猫猫码。
      *
      */
     override fun toString(): String
+    
+    /**
+     * 提供一个 [head] 并得到当前所表示的猫猫码字符串。
+     *
+     * 当 [head] 为null时视为使用当前 [head][Cat.head]。
+     *
+     */
+    public fun toCode(head: String? = null): String
     
     /**
      * 根据键获取对应的值。如果未寻得则得到null。
@@ -81,3 +82,10 @@ public interface Cat {
     @JsName("keys")
     public val keysArray: Array<String> get() = keys.toTypedArray()
 }
+
+/**
+ * ```kotlin
+ * val catcode = cat.code
+ * ```
+ */
+public inline val Cat.code: String get() = toCode()

@@ -19,15 +19,19 @@ private class LiteralCat(
     override val type: String,
     private val properties: Map<String, String>,
 ) : Cat {
-    override fun toString(head: String): String {
+    override fun toString(): String = literal
+    
+    override fun toCode(head: String?): String {
+        if (head == null || head == this.head) {
+            return literal
+        }
+        
         return buildString(literal.length - this.head.length + head.length) {
             append(literal, 0, headCoordinate.first)
             append(head)
             append(literal, headCoordinate.last + 1, literal.length)
         }
     }
-    
-    override fun toString(): String = literal
     
     override fun get(key: String): String? = properties[key]
     

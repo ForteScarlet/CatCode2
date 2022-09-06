@@ -196,7 +196,7 @@ internal inline fun String.targetCatCodeHead(
 
 @PublishedApi
 internal inline fun String.targetCatCodeType(
-    startIndex: Int = 1, // 0 should be '['
+    headEndIndex: Int,
     perceive: (startIndex: Int, endIndex: Int) -> Unit,
     notFound: () -> Unit = {
         throw IllegalArgumentException("codeValue '$this' is not a catcode: type not found by cat properties separator '$CAT_PROPERTIES_SEPARATOR'")
@@ -205,22 +205,22 @@ internal inline fun String.targetCatCodeType(
         throw IllegalArgumentException("codeValue '$this' is not a catcode: type is empty before cat properties separator '$CAT_PROPERTIES_SEPARATOR'")
     },
 ): Int {
-    var typeEndIndex = indexOf(CAT_PROPERTIES_SEPARATOR, startIndex)
+    var typeEndIndex = indexOf(CAT_PROPERTIES_SEPARATOR, headEndIndex)
     
     when {
         typeEndIndex < 0 -> {
             val lastIndex = lastIndex
             // not found, maybe last
-            if (lastIndex - 1 == startIndex) {
+            if (lastIndex - 1 == headEndIndex) {
                 notFound()
             }
             typeEndIndex = lastIndex
         }
         
-        typeEndIndex - 1 == startIndex -> typeEmpty()
+        typeEndIndex - 1 == headEndIndex -> typeEmpty()
     }
     
-    perceive(startIndex + 1, typeEndIndex)
+    perceive(headEndIndex + 1, typeEndIndex)
     return typeEndIndex
 }
 
@@ -247,7 +247,7 @@ internal inline fun walkCatCodeInternal(
     
     // find type
     val typeEndIndex = catCode.targetCatCodeType(
-        startIndex = headEndIndex,
+        headEndIndex = headEndIndex,
         perceive = { s, e ->
             if (perceiveType(s, e) == WalkResult.STOP) {
                 return
@@ -302,10 +302,14 @@ public fun getCatCodeHeadOrNull(catCode: String): String? {
  */
 @JsExport
 public fun getCatCodeType(catCode: String): String {
+    val headEndIndex = catCode.targetCatCodeHead({ _, _ -> })
+    
     lateinit var type: String
-    requireCatCodeLoosely(catCode).targetCatCodeType(perceive = { s, e ->
-        type = catCode.substring(s, e)
-    })
+    requireCatCodeLoosely(catCode).targetCatCodeType(
+        headEndIndex = headEndIndex,
+        perceive = { s, e ->
+            type = catCode.substring(s, e)
+        })
     
     return type
 }
@@ -320,10 +324,17 @@ public fun getCatCodeTypeOrNull(catCode: String): String? {
         return null
     }
     
+    val headEndIndex = catCode.targetCatCodeHead({ _, _ -> }, { /* ignore. */ })
+    if (headEndIndex < 0) {
+        return null
+    }
+    
     var type: String? = null
-    catCode.targetCatCodeType(perceive = { s, e ->
-        type = catCode.substring(s, e)
-    }) { /* ignore. */ }
+    catCode.targetCatCodeType(
+        headEndIndex = headEndIndex,
+        perceive = { s, e ->
+            type = catCode.substring(s, e)
+        }) { /* ignore. */ }
     
     return type
 }
