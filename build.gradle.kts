@@ -45,6 +45,4 @@ subprojects {
 
 
 
-jsCopyTask()
-
 changelogGenerateTask()

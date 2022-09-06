@@ -54,7 +54,6 @@ jobs:
           arguments: |
             build
             copySharedLibs
-            copyJsFileToSharedLibs
             --info
             --warning-mode all
             -x test
