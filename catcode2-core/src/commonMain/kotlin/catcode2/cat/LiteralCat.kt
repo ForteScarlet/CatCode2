@@ -125,7 +125,7 @@ public inline fun buildCat(type: String, head: String = CAT_HEAD, block: CatCode
  * 通过 [CatCodeLiteralBuilder] 构建一个catcode字符串。
  */
 @JvmOverloads
-@JsName("buildCatLiteral")
+@JvmName("buildCatLiteral")
 public inline fun buildCatLiteral(
     type: String,
     head: String = CAT_HEAD,

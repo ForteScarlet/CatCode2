@@ -44,6 +44,4 @@ fun sample() {
     val cqcode = CatCode.encodeToString(At.serializer(), at, "CQ")
     println(cqcode)            // [CQ:at,code=123456,name=forte]
 }
-
-
 ```
