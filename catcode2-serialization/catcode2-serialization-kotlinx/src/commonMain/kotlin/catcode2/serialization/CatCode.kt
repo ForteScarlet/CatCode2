@@ -6,7 +6,7 @@ import catcode2.cat.BaseCatCodeBuilder
 import catcode2.cat.CatCodeLiteralBuilder
 import catcode2.getCatParamEncode
 import catcode2.requireCatCode
-import catcode2.walkCatCodePropertiesLooselyContinuously
+import catcode2.walkCatCodePropertiesLenientlyContinuously
 import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.PolymorphicKind
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -40,7 +40,7 @@ public sealed class CatCode(
             requireCatCode(catcode)
         }
         
-        walkCatCodePropertiesLooselyContinuously(catcode, walk = properties::set)
+        walkCatCodePropertiesLenientlyContinuously(catcode, walk = properties::set)
         
         return deserializer.deserialize(CatCodeLiteralDecoder(this, deserializer.descriptor, properties))
     }

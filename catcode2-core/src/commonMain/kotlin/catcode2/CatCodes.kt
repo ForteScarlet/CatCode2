@@ -62,7 +62,6 @@ import kotlin.jvm.JvmSynthetic
  *
  */
 @OptIn(ExperimentalContracts::class)
-@JvmName("walkCatCode")
 @JsExport
 public inline fun walkCatCode(
     catCode: String,
@@ -145,7 +144,6 @@ public inline fun walkCatCode(
  *
  */
 @OptIn(ExperimentalContracts::class)
-@JvmName("walkCatCodeContinuously")
 @JsExport
 public inline fun walkCatCodeContinuously(
     catCode: String,
@@ -234,7 +232,7 @@ internal inline fun walkCatCodeInternal(
     perceiveType: (startIndex: Int, endIndex: Int) -> WalkResult?,
     perceiveProperty: (startIndex: Int, separatorIndex: Int, endIndex: Int) -> WalkResult?,
 ) {
-    if (!checkCatCodeLoosely(catCode)) throw IllegalArgumentException("codeValue '$catCode' is not a catcode: Not wrapped by '$CAT_PREFIX' and '$CAT_SUFFIX' or length < 5")
+    if (!checkCatCodeLeniently(catCode)) throw IllegalArgumentException("codeValue '$catCode' is not a catcode: Not wrapped by '$CAT_PREFIX' and '$CAT_SUFFIX' or length < 5")
     
     
     // find head
@@ -255,7 +253,7 @@ internal inline fun walkCatCodeInternal(
         }
     )
     
-    walkCatCodePropertiesInlineLooselyInternal(typeEndIndex, catCode) { s, spi, e ->
+    walkCatCodePropertiesInlineLenientlyInternal(typeEndIndex, catCode) { s, spi, e ->
         if (perceiveProperty(s, spi, e) == WalkResult.STOP) {
             return
         }
@@ -264,13 +262,13 @@ internal inline fun walkCatCodeInternal(
 
 
 /**
- * 尝试获取 [catCode] 中的 head 部分。会对 [catCode] 进行 [宽松地][checkCatCodeLoosely] 验证，如果无法通过验证则抛出异常。
+ * 尝试获取 [catCode] 中的 head 部分。会对 [catCode] 进行 [宽松地][checkCatCodeLeniently] 验证，如果无法通过验证则抛出异常。
  *
  */
 @JsExport
 public fun getCatCodeHead(catCode: String): String {
     lateinit var head: String
-    requireCatCodeLoosely(catCode).targetCatCodeHead(perceive = { s, e ->
+    requireCatCodeLeniently(catCode).targetCatCodeHead(perceive = { s, e ->
         head = catCode.substring(s, e)
     })
     
@@ -283,7 +281,7 @@ public fun getCatCodeHead(catCode: String): String {
  */
 @JsExport
 public fun getCatCodeHeadOrNull(catCode: String): String? {
-    if (!checkCatCodeLoosely(catCode)) {
+    if (!checkCatCodeLeniently(catCode)) {
         return null
     }
     
@@ -297,7 +295,7 @@ public fun getCatCodeHeadOrNull(catCode: String): String? {
 
 
 /**
- * 尝试获取 [catCode] 中的 type 部分。会对 [catCode] 进行 [宽松地][checkCatCodeLoosely] 验证，如果无法通过验证则抛出异常。
+ * 尝试获取 [catCode] 中的 type 部分。会对 [catCode] 进行 [宽松地][checkCatCodeLeniently] 验证，如果无法通过验证则抛出异常。
  *
  */
 @JsExport
@@ -305,7 +303,7 @@ public fun getCatCodeType(catCode: String): String {
     val headEndIndex = catCode.targetCatCodeHead({ _, _ -> })
     
     lateinit var type: String
-    requireCatCodeLoosely(catCode).targetCatCodeType(
+    requireCatCodeLeniently(catCode).targetCatCodeType(
         headEndIndex = headEndIndex,
         perceive = { s, e ->
             type = catCode.substring(s, e)
@@ -320,7 +318,7 @@ public fun getCatCodeType(catCode: String): String {
  */
 @JsExport
 public fun getCatCodeTypeOrNull(catCode: String): String? {
-    if (!checkCatCodeLoosely(catCode)) {
+    if (!checkCatCodeLeniently(catCode)) {
         return null
     }
     
@@ -345,12 +343,11 @@ public fun getCatCodeTypeOrNull(catCode: String): String? {
  * @throws IllegalArgumentException 当 [codeValue] 无法通过 [checkCatCode] 校验时。（see [requireCatCode]）
  * @throws IllegalArgumentException 当一个属性切割符 [CAT_PROPERTIES_SEPARATOR] 后面无法寻得有效键值对（缺少键值切割符 [CAT_PROPERTY_SEPARATOR] 时）
  *
- * @see walkCatCodePropertiesLoosely
+ * @see walkCatCodePropertiesLeniently
  */
 @OptIn(ExperimentalContracts::class)
 @JsExport
 @JvmOverloads
-@JvmName("walkCatCodeProperties")
 public inline fun walkCatCodeProperties(
     codeValue: String,
     decodeValue: Boolean = true,
@@ -360,7 +357,7 @@ public inline fun walkCatCodeProperties(
         callsInPlace(walk, InvocationKind.UNKNOWN)
     }
     
-    walkCatCodePropertiesLoosely(requireCatCode(codeValue), decodeValue, walk)
+    walkCatCodePropertiesLeniently(requireCatCode(codeValue), decodeValue, walk)
 }
 
 /**
@@ -369,12 +366,11 @@ public inline fun walkCatCodeProperties(
  * @throws IllegalArgumentException 当 [codeValue] 无法通过 [checkCatCode] 校验时。（see [requireCatCode]）
  * @throws IllegalArgumentException 当一个属性切割符 [CAT_PROPERTIES_SEPARATOR] 后面无法寻得有效键值对（缺少键值切割符 [CAT_PROPERTY_SEPARATOR] 时）
  *
- * @see walkCatCodePropertiesLoosely
+ * @see walkCatCodePropertiesLeniently
  */
 @OptIn(ExperimentalContracts::class)
 @JsExport
 @JvmOverloads
-@JvmName("walkCatCodePropertiesContinuously")
 public inline fun walkCatCodePropertiesContinuously(
     codeValue: String,
     decodeValue: Boolean = true,
@@ -384,7 +380,7 @@ public inline fun walkCatCodePropertiesContinuously(
         callsInPlace(walk, InvocationKind.UNKNOWN)
     }
     
-    walkCatCodePropertiesLoosely(requireCatCode(codeValue), decodeValue) { k, v ->
+    walkCatCodePropertiesLeniently(requireCatCode(codeValue), decodeValue) { k, v ->
         walk(k, v)
         WalkResult.CONTINUE
     }
@@ -394,7 +390,7 @@ public inline fun walkCatCodePropertiesContinuously(
 /**
  * 尝试依次遍历一个猫猫码字符串中的所有属性键值对。
  *
- * 为了提供更低的损耗，[walkCatCodePropertiesLoosely] 的遍历与检测**十分宽松**。对于 [codeValue] 的合规检测来说，
+ * 为了提供更低的损耗，[walkCatCodePropertiesLeniently] 的遍历与检测**十分宽松**。对于 [codeValue] 的合规检测来说，
  * **只会**检测 [codeValue] 是否被 [`[`][CAT_PREFIX] 和 [`]`][CAT_SUFFIX] 前后包裹而不关心 `HEAD` 和 `TYPE`。
  *
  * 这种宽松地检测方式可能会使得一些类似下述格式的代码也能够被正常使用：
@@ -410,8 +406,7 @@ public inline fun walkCatCodePropertiesContinuously(
 @OptIn(ExperimentalContracts::class)
 @JsExport
 @JvmOverloads
-@JvmName("walkCatCodePropertiesLoosely")
-public inline fun walkCatCodePropertiesLoosely(
+public inline fun walkCatCodePropertiesLeniently(
     codeValue: String,
     decodeValue: Boolean = true,
     walk: (key: String, value: String) -> WalkResult?,
@@ -420,17 +415,17 @@ public inline fun walkCatCodePropertiesLoosely(
         callsInPlace(walk, InvocationKind.UNKNOWN)
     }
     
-    if (!checkCatCodeLoosely(codeValue)) throw IllegalArgumentException("codeValue '$codeValue' is not a catcode: Not wrapped by '$CAT_PREFIX' and '$CAT_SUFFIX' or length < 5")
+    if (!checkCatCodeLeniently(codeValue)) throw IllegalArgumentException("codeValue '$codeValue' is not a catcode: Not wrapped by '$CAT_PREFIX' and '$CAT_SUFFIX' or length < 5")
     
     if (decodeValue) {
-        walkCatCodePropertiesInlineLoosely0(
+        walkCatCodePropertiesInlineLeniently0(
             codeValue.indexOf(CAT_PROPERTIES_SEPARATOR),
             codeValue,
             { decodeCatParam(it) },
             walk
         )
     } else {
-        walkCatCodePropertiesInlineLoosely0(codeValue.indexOf(CAT_PROPERTIES_SEPARATOR), codeValue, { it }, walk)
+        walkCatCodePropertiesInlineLeniently0(codeValue.indexOf(CAT_PROPERTIES_SEPARATOR), codeValue, { it }, walk)
     }
 }
 
@@ -438,7 +433,7 @@ public inline fun walkCatCodePropertiesLoosely(
 /**
  * 尝试依次遍历一个猫猫码字符串中的所有属性键值对。
  *
- * 为了提供更低的损耗，[walkCatCodePropertiesLoosely] 的遍历与检测**十分宽松**。对于 [codeValue] 的合规检测来说，
+ * 为了提供更低的损耗，[walkCatCodePropertiesLeniently] 的遍历与检测**十分宽松**。对于 [codeValue] 的合规检测来说，
  * **只会**检测 [codeValue] 是否被 [`[`][CAT_PREFIX] 和 [`]`][CAT_SUFFIX] 前后包裹而不关心 `HEAD` 和 `TYPE`。
  *
  * 这种宽松地检测方式可能会使得一些类似下述格式的代码也能够被正常使用：
@@ -454,8 +449,7 @@ public inline fun walkCatCodePropertiesLoosely(
 @OptIn(ExperimentalContracts::class)
 @JsExport
 @JvmOverloads
-@JvmName("walkCatCodePropertiesLooselyContinuously")
-public inline fun walkCatCodePropertiesLooselyContinuously(
+public inline fun walkCatCodePropertiesLenientlyContinuously(
     codeValue: String,
     decodeValue: Boolean = true,
     walk: (key: String, value: String) -> Unit,
@@ -464,7 +458,7 @@ public inline fun walkCatCodePropertiesLooselyContinuously(
         callsInPlace(walk, InvocationKind.UNKNOWN)
     }
     
-    return walkCatCodePropertiesLoosely(
+    return walkCatCodePropertiesLeniently(
         codeValue, decodeValue
     ) { k, v ->
         walk(k, v)
@@ -473,13 +467,13 @@ public inline fun walkCatCodePropertiesLooselyContinuously(
 }
 
 @PublishedApi
-internal inline fun walkCatCodePropertiesInlineLoosely0(
+internal inline fun walkCatCodePropertiesInlineLeniently0(
     startIndex0: Int,
     codeValue: String,
     valuePreprocess: (String) -> String,
     walk: (key: String, value: String) -> WalkResult?,
 ) {
-    walkCatCodePropertiesInlineLooselyInternal(startIndex0, codeValue) { si, spi, ei ->
+    walkCatCodePropertiesInlineLenientlyInternal(startIndex0, codeValue) { si, spi, ei ->
         val key = codeValue.substring(si, spi)
         val value = codeValue.substring(spi + 1, ei)
         if (walk(key, valuePreprocess(value)) == WalkResult.STOP) {
@@ -491,7 +485,7 @@ internal inline fun walkCatCodePropertiesInlineLoosely0(
 
 @PublishedApi
 @JvmSynthetic
-internal inline fun walkCatCodePropertiesInlineLooselyInternal(
+internal inline fun walkCatCodePropertiesInlineLenientlyInternal(
     startIndex0: Int,
     codeValue: String,
     walk: (startIndex: Int, separatorIndex: Int, endIndex: Int) -> Unit,

@@ -1,8 +1,3 @@
-# CatCode2 - Core
-
-CatCode2的核心模块。
-
-
 ## 安装
 
 ```shell
@@ -119,3 +114,31 @@ console.log(cat.keys)         // [ 'name', 'foo' ]
 ```
 
 需要注意的是，当使用对象时，属性值的类型不可为对象或数组，应保证元素都为字符串、布尔值、数值等基本数据类型。
+
+也可以通过构建器构建结果。
+
+```js
+const builder = catcode2.cat.newCatCodeBuilder('code')
+
+builder.set('name', 'forte')
+builder.key('foo').value('tar')
+
+builder.setDecode('age', '12')
+builder.key('size').valueEncode('8')
+
+const cat = builder.build()
+
+console.log(cat.toString()) // [CAT:code,name=forte,foo=tar,age=12,size=8]
+```
+
+或者直接构建字符串。
+
+```js
+const builder = catcode2.cat.newCatCodeLiteralBuilder('at', 'CQ')
+
+builder.set('qq', '1145141919810')
+
+const cat = builder.build() // string
+
+console.log(cat) // [CQ:at,qq=1145141919810]
+```

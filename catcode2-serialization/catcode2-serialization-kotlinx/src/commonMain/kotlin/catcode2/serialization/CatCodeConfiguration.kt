@@ -3,7 +3,7 @@ package catcode2.serialization
 import catcode2.CAT_HEAD
 import catcode2.checkCatCode
 import catcode2.walkCatCodeProperties
-import catcode2.walkCatCodePropertiesLoosely
+import catcode2.walkCatCodePropertiesLeniently
 import kotlin.jvm.JvmField
 
 
@@ -33,7 +33,7 @@ public data class CatCodeConfiguration internal constructor(
     /**
      * 是否在对指定catcode反序列化时使用更宽松的格式校验。
      * 如果开启宽松模式，则解析catcode时将不会对HEAD和type进行校验，
-     * 只要能够通过 [walkCatCodePropertiesLoosely] 的校验即可。
+     * 只要能够通过 [walkCatCodePropertiesLeniently] 的校验即可。
      *
      * 默认情况下会使用 [walkCatCodeProperties], 在遍历前会先通过 [checkCatCode] 校验其格式。
      */
