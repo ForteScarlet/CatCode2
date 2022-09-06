@@ -1,6 +1,7 @@
 package catcode2
 
 import kotlin.test.Test
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 
@@ -14,7 +15,7 @@ class CatCodesTest {
     fun walkTest() {
         
         val pairs1 = mutableMapOf<String, String>()
-        walkCatCode(requireCatCode("[CAT:atall]"),
+        walkCatCodeContinuously(requireCatCode("[CAT:atall]"),
             perceiveHead = { assertTrue { it == "CAT" } },
             perceiveType = { assertTrue { it == "atall" } }
         ) { k, v ->
@@ -24,7 +25,7 @@ class CatCodesTest {
         
         
         val pairs2 = mutableMapOf<String, String>()
-        walkCatCode(
+        walkCatCodeContinuously(
             requireCatCode("[CQ:at,code=123,name=forte]"),
             perceiveHead = { assertTrue { it == "CQ" } },
             perceiveType = { assertTrue { it == "at" } }
@@ -37,7 +38,7 @@ class CatCodesTest {
         assertTrue { pairs2["name"] == "forte" }
         
         val pairs3 = mutableMapOf<String, String>()
-        walkCatCode(requireCatCode("[OB:at_user,code=123]"),
+        walkCatCodeContinuously(requireCatCode("[OB:at_user,code=123]"),
             perceiveHead = { assertTrue { it == "OB" } },
             perceiveType = { assertTrue { it == "at_user" } }
         ) { k, v ->
@@ -48,13 +49,23 @@ class CatCodesTest {
         assertTrue { pairs3["code"] == "123" }
     }
     
-    // @Test
-    // fun catcodeTest() {
-    //     val cat = LiteralCat.of("[CAT:at,code=123,name=forte]")
-    //     println(cat)
-    //     println(cat.toString("CQ"))
-    //     println(cat["code"])
-    //     println(cat["name"])
-    // }
+    
+    @Test
+    fun catCodeWalkTest() {
+        val code = "[CAT:foo,tar=bar]"
+        
+        var head: String? = null
+        
+        walkCatCode(code, true,
+            perceiveHead = {
+                head = it
+                WalkResult.STOP
+            }
+        
+        ) { _, _ ->
+            error("no here.")
+        }
+        assertNotNull(head)
+    }
     
 }

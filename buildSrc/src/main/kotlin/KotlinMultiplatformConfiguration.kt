@@ -30,8 +30,10 @@ fun Project.configMultiplatform(
                 }
             }
             withJava()
-            testRuns["test"].executionTask.configure {
-                useJUnitPlatform()
+            testRuns.all {
+                executionTask.configure {
+                    useJUnitPlatform()
+                }
             }
         }
         
@@ -44,6 +46,7 @@ fun Project.configMultiplatform(
             
             browser()
             nodejs()
+            
             binaries.library()
             
             // moduleKind0 = "umd"
@@ -51,18 +54,8 @@ fun Project.configMultiplatform(
             
             compilations["main"].apply {
                 packageJson {
-                    // rename: @catcode2/name-suffix
                     name = jsPackageJsonName
                     version = jsVersion
-                    
-                    // val currentVersion = version
-                    //
-                    // if (currentVersion.endsWith("snapshot", true)) {
-                    //     if snapshot, use timestamp
-                        // version = "$currentVersion.${System.currentTimeMillis()}"
-                    // }
-    
-                    
                     
                     customField("repository", mapOf("type" to "git", "url" to GIT_URL))
                     customField("description", project.description?.toString() ?: "")
@@ -103,10 +96,23 @@ fun Project.configMultiplatform(
                 }
             }
             
+            val exceptJvmCommonMain = create("exceptJvmCommonMain") {
+                dependsOn(commonMain)
+            }
+            
+            val exceptJvmCommonTest = create("exceptJvmCommonTest") {
+                dependsOn(commonTest)
+            }
+            
+            getByName("jsMain") {
+                dependsOn(exceptJvmCommonMain)
+            }
+            
             getByName("jvmTest") {
                 dependencies {
                     implementation(kotlin("test-junit5"))
                 }
+                dependsOn(exceptJvmCommonTest)
             }
             
             getByName("jsTest") {
@@ -117,14 +123,17 @@ fun Project.configMultiplatform(
             
             val nativeCommonMain = create("nativeCommonMain") {
                 dependsOn(commonMain)
+                dependsOn(exceptJvmCommonMain)
             }
             val nativeCommonTest = create("nativeCommonTest") {
                 dependsOn(commonTest)
+                dependsOn(exceptJvmCommonTest)
             }
             val notIn = setOf(
                 "commonMain", "commonTest",
                 "jvmMain", "jvmTest",
                 "jsMain", "jsTest",
+                "exceptJvmCommonMain", "exceptJvmCommonTest",
                 "nativeCommonMain", "nativeCommonTest",
             )
             

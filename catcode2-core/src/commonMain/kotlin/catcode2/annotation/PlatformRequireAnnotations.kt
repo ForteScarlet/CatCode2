@@ -12,4 +12,4 @@ public annotation class Api4Js
  */
 @RequiresOptIn(level = RequiresOptIn.Level.WARNING)
 @Retention(AnnotationRetention.BINARY)
-public annotation class Api4Jvm
+public annotation class Api4J

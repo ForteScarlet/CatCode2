@@ -1,16 +1,19 @@
 package catcode2.cat
 
 import catcode2.*
+import kotlin.js.JsExport
 import kotlin.js.JsName
 import kotlin.jvm.JvmName
 import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic
+import catcode2.cat.KeyHandle as BaseKeyHandle
 
 /**
  * 用于直接构建 CatCode 字符串地构建器。
  *
  * @author ForteScarlet
  */
+@JsExport
 public class CatCodeLiteralBuilder private constructor(private val appendable: Appendable) :
     BaseCatCodeBuilder<String, CatCodeLiteralBuilder> {
     private var finished = false
@@ -20,7 +23,7 @@ public class CatCodeLiteralBuilder private constructor(private val appendable: A
     override fun set(key: String, value: String, encode: Boolean): CatCodeLiteralBuilder = apply {
         checkFinish()
         appendable.append(CAT_PROPERTIES_SEPARATOR).append(key).append(CAT_PROPERTY_SEPARATOR)
-        appendable.append(if (encode) CatEscalator.encodeParam(value) else value)
+        appendable.append(if (encode) encodeCatParam(value) else value)
     }
     
     override fun key(key: String): KeyHandle {
@@ -36,17 +39,17 @@ public class CatCodeLiteralBuilder private constructor(private val appendable: A
     /**
      * 通过 [CatCodeBuilder.key] 得到对, 指定的key指设置结果。
      *
-     * [CatCodeBuilder.key] 与 [KeyHandle] 不可交叉使用，否则可能会导致预期外的结果。
-     * 当使用 [key] 与 [KeyHandle] 时，需要保证至少是一一对应的，例如：
+     * [CatCodeBuilder.key] 与 [BaseKeyHandle] 不可交叉使用，否则可能会导致预期外的结果。
+     * 当使用 [key] 与 [BaseKeyHandle] 时，需要保证至少是一一对应的，例如：
      *
      * ```kotlin
      * key("key").value("value")
      * ```
-     * [KeyHandle] 不是线程安全的，不能异步地使用
+     * [BaseKeyHandle] 不是线程安全的，不能异步地使用
      *
      *
      */
-    public interface KeyHandle : BaseCatCodeBuilder.KeyHandle<String, CatCodeLiteralBuilder> {
+    public interface KeyHandle : BaseKeyHandle<String, CatCodeLiteralBuilder> {
         /**
          * 为当前key设置一个value。如果 [value] 为null则跳过本次设置。
          *
@@ -92,12 +95,13 @@ public class CatCodeLiteralBuilder private constructor(private val appendable: A
         @JsName("of")
         @JvmOverloads
         public fun of(type: String, head: String = CAT_HEAD): CatCodeLiteralBuilder =
-            CatCodeLiteralBuilder(StringBuilder().initAppendable(head, type))
+            CatCodeLiteralBuilder(StringBuilder(3 + type.length + head.length).initAppendable(head, type))
         
         
         /**
          * 通过 [appendable] 构建一个 [CatCodeLiteralBuilder]。
          */
+        @Suppress("NON_EXPORTABLE_TYPE")
         @JvmStatic
         @JvmName("of")
         @JvmOverloads

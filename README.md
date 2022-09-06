@@ -110,7 +110,15 @@ implementation("love.forte.catcode2:catcode2-serialization-kotlinx:$catcode2_ver
 
 ### JS
 
-参考 [README-JS](README-JS.md) 。
+### npm
+
+> npm package see: https://www.npmjs.com/package/@catcode2/core
+
+```shell
+npm i @catcode2/core
+```
+
+_可参考 [README-JS](README-JS.md)_
 
 
 ### Native

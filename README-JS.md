@@ -1,9 +1,7 @@
-# Cat Code2 For Js
-
 <div align="center">
     <img src="./.catcode2/logo.png" alt="catcode logo"/>
     <h3>
-        - 😺 CatCode 2 😺 -
+        - 😺 CatCode 2 For JS 😺 -
     </h3>
     <span>
         <a href="https://github.com/ForteScarlet/CatCode2" target="_blank">github</a>
@@ -23,15 +21,6 @@
 
 </div>
 
-## 安装
-
-### npm
-
-> npm package see: https://www.npmjs.com/package/@catcode2/core
-
-```shell
-npm i @catcode2/core
-```
 
 ## 使用
 
