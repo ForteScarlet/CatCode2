@@ -2,6 +2,7 @@ package catcode2
 
 import catcode2.cat.buildCat
 import catcode2.cat.buildCatLiteral
+import catcode2.cat.code
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
@@ -24,8 +25,8 @@ class CatBuildTest {
         assertTrue { cat1["display"] == "@forte" }
         assertTrue { cat1["name"] == "forliy" }
     
-        println(cat1.toString())
-        println(cat1.toString("CQ"))
+        println(cat1.code)
+        println(cat1.toCode("CQ"))
         
         val cat2 = buildCat("at") {
             this["display"] = "@forte"
