@@ -158,7 +158,7 @@ private inline fun List<Project>.generateNpmTable(onString: (String) -> Unit) {
         val packageName = it.jsPackageJsonName
         val version = it.jsVersion
         
-        onString("| ${it.name} | [$packageName:\t$version](https://www.npmjs.com/package/$packageName/v/$version) |\n")
+        onString("| ${it.name} | [$packageName:\tv$version](https://www.npmjs.com/package/$packageName/v/$version) |\n")
     }
     
     
