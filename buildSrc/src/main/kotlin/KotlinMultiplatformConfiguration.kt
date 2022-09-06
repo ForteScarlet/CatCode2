@@ -14,6 +14,8 @@ private const val GIT_URL = "git+https://github.com/ForteScarlet/CatCode2.git"
 private const val GITHUB_ISSUES_URL = "https://github.com/ForteScarlet/CatCode2/issues"
 
 fun Project.configMultiplatform(
+    sharedLib: Boolean,
+    staticLib: Boolean,
     skipSerializationNotSupport: Boolean = false,
     sharedLibConfigure: SharedLibrary.() -> Unit = {},
     andMore: (KotlinMultiplatformExtension.() -> Unit)? = null,
@@ -86,7 +88,7 @@ fun Project.configMultiplatform(
             }
         }
         
-        configureSupportNativePlatforms(skipSerializationNotSupport, sharedLibConfigure)
+        configureSupportNativePlatforms(sharedLib, staticLib, skipSerializationNotSupport, sharedLibConfigure)
         
         sourceSets {
             val commonMain by getting

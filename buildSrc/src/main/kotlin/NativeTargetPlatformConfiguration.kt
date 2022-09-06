@@ -10,17 +10,27 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.SharedLibrary
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
 
 
-fun KotlinTargetWithBinaries<*, AbstractKotlinNativeBinaryContainer>.configSharedLib(configure: SharedLibrary.() -> Unit = {}) {
+fun KotlinTargetWithBinaries<*, AbstractKotlinNativeBinaryContainer>.configSharedLib(
+    sharedLib: Boolean,
+    staticLib: Boolean,
+    configure: SharedLibrary.() -> Unit = {},
+) {
     binaries {
         val targetSubDirectory = target.disambiguationClassifier?.let { "$it/" }.orEmpty()
-        sharedLib {
-            baseName = project.name
-            outputDirectory = project.buildDir.resolve("sharedLibs/$targetSubDirectory${this.name}")
-            configure()
+        if (sharedLib) {
+            sharedLib {
+                baseName = project.name
+                outputDirectory = project.buildDir.resolve("sharedLibs/$targetSubDirectory${this.name}")
+                configure()
+            }
         }
-        staticLib {
-            outputDirectory = project.buildDir.resolve("staticLibs/${targetSubDirectory}${this.name}")
+        
+        if (staticLib) {
+            staticLib {
+                outputDirectory = project.buildDir.resolve("staticLibs/${targetSubDirectory}${this.name}")
+            }
         }
+        
     }
 }
 
@@ -84,76 +94,83 @@ fun Project.sharedLibsCopyTask() {
 }
 
 fun KotlinTargetContainerWithPresetFunctions.configureSupportNativePlatforms(
+    sharedLib: Boolean,
+    staticLib: Boolean,
     skipSerializationNotSupport: Boolean = false,
     sharedLibConfigure: SharedLibrary.() -> Unit = {},
 ) {
+    
+    fun KotlinTargetWithBinaries<*, AbstractKotlinNativeBinaryContainer>.configSharedLib0() {
+        configSharedLib(sharedLib, staticLib, sharedLibConfigure)
+    }
+    
     iosArm32 {
-        configSharedLib(sharedLibConfigure)
+        configSharedLib0()
     }
     iosArm64 {
-        configSharedLib(sharedLibConfigure)
+        configSharedLib0()
     }
     iosX64 {
-        configSharedLib(sharedLibConfigure)
+        configSharedLib0()
     }
     iosSimulatorArm64 {
-        configSharedLib(sharedLibConfigure)
+        configSharedLib0()
     }
     watchosArm32 {
-        configSharedLib(sharedLibConfigure)
+        configSharedLib0()
     }
     watchosArm64 {
-        configSharedLib(sharedLibConfigure)
+        configSharedLib0()
     }
     watchosX86 {
-        configSharedLib(sharedLibConfigure)
+        configSharedLib0()
     }
     watchosX64 {
-        configSharedLib(sharedLibConfigure)
+        configSharedLib0()
     }
     watchosSimulatorArm64 {
-        configSharedLib(sharedLibConfigure)
+        configSharedLib0()
     }
     tvosArm64 {
-        configSharedLib(sharedLibConfigure)
+        configSharedLib0()
     }
     tvosX64 {
-        configSharedLib(sharedLibConfigure)
+        configSharedLib0()
     }
     tvosSimulatorArm64 {
-        configSharedLib(sharedLibConfigure)
+        configSharedLib0()
     }
     linuxX64 {
-        configSharedLib(sharedLibConfigure)
+        configSharedLib0()
     }
     mingwX86 {
-        configSharedLib(sharedLibConfigure)
+        configSharedLib0()
     }
     mingwX64 {
-        configSharedLib(sharedLibConfigure)
+        configSharedLib0()
     }
     macosX64 {
-        configSharedLib(sharedLibConfigure)
+        configSharedLib0()
     }
     macosArm64 {
-        configSharedLib(sharedLibConfigure)
+        configSharedLib0()
     }
     linuxArm64 {
-        configSharedLib(sharedLibConfigure)
+        configSharedLib0()
     }
     linuxArm32Hfp {
-        configSharedLib(sharedLibConfigure)
+        configSharedLib0()
     }
-
+    
     // not support in kotlinx serialization
     // ...
     // right?
     if (!skipSerializationNotSupport) {
         linuxMips32 {
-            configSharedLib(sharedLibConfigure)
+            configSharedLib0()
         }
         linuxMipsel32 {
-            configSharedLib(sharedLibConfigure)
+            configSharedLib0()
         }
         wasm32 {
             // unsupported
