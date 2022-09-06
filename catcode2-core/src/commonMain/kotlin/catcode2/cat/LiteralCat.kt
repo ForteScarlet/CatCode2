@@ -138,7 +138,6 @@ public inline fun buildCatLiteral(
 /**
  * [Cat] 的构建器。
  */
-@JsExport
 public class CatCodeBuilder private constructor(private val head: String, private val type: String) :
     BaseCatCodeBuilder<Cat, CatCodeBuilder> {
     // [HEAD:TYPE]

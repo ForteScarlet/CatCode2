@@ -49,7 +49,21 @@ console.log(properties) // [ 'k1: v1', 'name: forte', 'tar: foo' ]
 或者分开操作？
 
 ```js
+const catcodeValue = '[CAT:code,k1=v1,name=forte,tar=foo]'
 
+
+const catHead = catcode2.getCatCodeHead(catcodeValue)
+const catType = catcode2.getCatCodeType(catcodeValue)
+
+let properties = []
+
+catcode2.walkCatCodeProperties(catcodeValue, true, (key, value) => {
+    properties.push(key + ': ' + value)
+})
+
+console.log(catHead)    // CAT
+console.log(catType)    // code
+console.log(properties) // [ 'k1: v1', 'name: forte', 'tar: foo' ]
 ```
 
 
@@ -65,3 +79,43 @@ const catHead = cat.type        // at
 const keys = cat.keys           // [ 'code' ]
 ```
 
+构建一个猫猫码实例，
+
+通过 `key-value` 对象数组：
+
+```js
+const cat = catcode2.cat.catOfProperties(
+    'code',
+    'CAT',
+    [
+        {key: 'name', value: 'forte'},
+        {key: 'foo', value: 'tar'},
+    ]
+)
+
+console.log(cat.get('name'))  // forte          
+console.log(cat.toString())   // [CAT:code,name=forte,foo=tar]      
+console.log(cat.head)         // CAT  
+console.log(cat.type)         // code  
+console.log(cat.keys)         // [ 'name', 'foo' ]  
+```
+
+`catOfProperties` 最后的数组参数，你需要保证数组内元素为对象，且对象内都至少存在 `key` 和 `value` 属性。
+
+或者通过任意对象构建：
+
+```js
+const cat = catcode2.cat.catOfEntity(
+    'code',
+    'CAT',
+    { name: 'forte', foo: 'tar' }
+)
+    
+console.log(cat.get('name'))  // forte          
+console.log(cat.toString())   // [CAT:code,name=forte,foo=tar]      
+console.log(cat.head)         // CAT  
+console.log(cat.type)         // code  
+console.log(cat.keys)         // [ 'name', 'foo' ]  
+```
+
+需要注意的是，当使用对象时，属性值的类型不可为对象或数组，应保证元素都为字符串、布尔值、数值等基本数据类型。
