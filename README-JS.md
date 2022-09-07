@@ -1,7 +1,7 @@
 <div align="center">
     <img src="./.catcode2/logo.png" alt="catcode logo"/>
     <h3>
-        - 😺 CatCode 2 For JS 😺 -
+        - 😺 CatCode Ⅱ For JS 😺 -
     </h3>
     <span>
         <a href="https://github.com/ForteScarlet/CatCode2" target="_blank">github</a>

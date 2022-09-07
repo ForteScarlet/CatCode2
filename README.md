@@ -1,7 +1,7 @@
 <div align="center">
     <img src="./.catcode2/logo.png" alt="catcode logo"/>
     <h3>
-        - 😺 CatCode 2 😺 -
+        - 😺 CatCode Ⅱ 😺 -
     </h3>
     <span>
         <a href="https://github.com/ForteScarlet/CatCode2" target="_blank">github</a>
@@ -27,9 +27,11 @@
 
 <div align="center">
     <h3>
-        猫猫码（Cat code），一个可爱的通用特殊码，CQ码的精神延续。
+        猫猫码（Cat Code），一个可爱的通用特殊码，CQ码的精神延续。
     </h3>
 </div>   
+
+> <small><i>CatCode1前往 [CatCode](https://github.com/ForteScarlet/CatCode) 查看。</i></small>
 
 猫猫码是一个具有特定格式的字符串格式编码，它看上去是这个样子的 👉 `[CAT:xxx,param1=value1,param2=value2]`
 
@@ -43,17 +45,20 @@
 ### **猫猫是严格的。**
 
 为了避免混淆整个存在猫猫码的文本中不允许出现：`[`、`]`、`&`
-字符和制表符与换行符，猫猫码文本内中除了上述字符外，还不允许出现`,`与`=`字符。
+字符和制表符与换行符，猫猫码文本内中除了上述字符外，还不允许出现 `,` 与 `=` 字符。
 因此，猫猫码的转义规则为：
 
-- `&`  ->  `&amp;`
-- `[`  ->  `&#91;`
-- `]`  ->  `&#93;`
-- `,`  ->  `&#44;`
-- `=`  ->  `&#61;`
-- `\n` ->  `&#13;`
-- `\r` ->  `&#10;`
-- `\t` ->  `&#09;`
+| 源    | 转       |
+|------|---------|
+| `&`  | `&amp;` |
+| `[`  | `&#91;` |
+| `]`  | `&#93;` |
+| `,`  | `&#44;` |
+| `=`  | `&#61;` |
+| `\n` | `&#13;` |
+| `\r` | `&#10;` |
+| `\t` | `&#09;` |
+
 
 ### **猫猫是包容的。**
 
@@ -81,3 +86,7 @@
 前往 [序列化模块](catcode2-serialization) 获取更多信息。
 
 
+
+## LICENSE
+
+[MIT LICENSE](LICENSE).
