@@ -12,6 +12,13 @@ import kotlin.test.assertTrue
 class CatCodesTest {
     
     @Test
+    fun getTest() {
+        val code = "[FO:code]"
+        assertTrue { getCatCodeHead(code) == "FO" }
+        assertTrue { getCatCodeType(code) == "code" }
+    }
+    
+    @Test
     fun walkTest() {
         
         val pairs1 = mutableMapOf<String, String>()

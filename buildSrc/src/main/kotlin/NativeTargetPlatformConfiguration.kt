@@ -37,7 +37,7 @@ fun KotlinTargetWithBinaries<*, AbstractKotlinNativeBinaryContainer>.configShare
 fun Project.sharedLibsCopyTask() {
     val nativeLinks = tasks.withType<KotlinNativeLink>()
     
-    val nativeLinksTasks = nativeLinks.map {
+    val nativeLinkCopyTasks = nativeLinks.map {
         val targetPlatformName = it.binary.target.disambiguationClassifier
         tasks.register<Copy>("${it.name}CopySharedLibs") {
             group = "build"
@@ -88,7 +88,7 @@ fun Project.sharedLibsCopyTask() {
         //     //  it.name == "build" ||
         //     tasks.filter { it.name != "buildAndCopySharedLibs" && it.name.endsWith("CopySharedLibs") }
         // })
-        dependsOn(nativeLinksTasks)
+        dependsOn(nativeLinkCopyTasks)
         mustRunAfter(provider { tasks.named("build") })
     }
 }

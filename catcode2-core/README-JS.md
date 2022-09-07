@@ -15,6 +15,8 @@ const catcode2 = require('@catcode2/core').catcode2
 
 ## 应用
 
+> **注: 下述代码以在 `Node.js` 环境中为例。**
+
 遍历一个猫猫码。
 
 ```js

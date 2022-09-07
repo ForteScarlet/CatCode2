@@ -1,5 +1,5 @@
 # native package workflows
-name: build and publish release
+name: build and publish snapshot
 on:
   push:
     branches:

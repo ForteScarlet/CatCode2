@@ -225,3 +225,74 @@ System.out.println(cat); // [HEAD:type,name=forte,age=18]
 ```
 
 </details>
+
+或者使用构建器来构建一个猫猫码实例：
+
+<details open>
+<summary>Kotlin</summary>
+
+```kotlin
+val cat: Cat = buildCat("foo") {
+    "key" - "value"
+    this["age"] = "18"
+    key("name") value "forte"
+}
+
+println(cat) // [CAT:foo,key=value,age=18,name=forte]
+
+```
+
+</details>
+
+<details>
+<summary>Java</summary>
+
+```java
+final CatCodeBuilder builder = CatCodeBuilder.of("foo");
+
+final Cat cat = builder
+        .set("key", "value")
+        .set("age", "18", false)
+        .key("name").value("forte")
+        .build();
+
+System.out.println(cat);  // [CAT:foo,key=value,age=18,name=forte]
+```
+
+</details>
+
+也可以直接构建一个猫猫码字符串：
+
+
+<details open>
+<summary>Kotlin</summary>
+
+```kotlin
+val cat: String = buildCatLiteral("foo") {
+    "key" - "value"
+    this["age"] = "18"
+    key("name") value "forte"
+}
+
+println(cat) // [CAT:foo,key=value,age=18,name=forte]
+
+```
+
+</details>
+
+<details>
+<summary>Java</summary>
+
+```java
+final CatCodeLiteralBuilder builder = CatCodeLiteralBuilder.of("foo");
+
+final String cat = builder
+        .set("key", "value")
+        .set("age", "18", false)
+        .key("name").value("forte")
+        .build();
+
+System.out.println(cat);  // [CAT:foo,key=value,age=18,name=forte]
+```
+
+</details>
