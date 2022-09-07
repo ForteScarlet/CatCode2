@@ -86,6 +86,59 @@
 前往 [序列化模块](catcode2-serialization) 获取更多信息。
 
 
+## 速览
+
+```kotlin
+walkCatCodeContinuously(
+    "[CAT:code,k1=v1,name=forte,tar=foo]",
+    true,
+    { head: String -> println("head = $head") },
+    { type: String -> println("type = $type") }
+) { key: String, value: String -> println("$key: $value") }
+```
+
+```kotlin
+val cat = catOf("[CAT:at,code=123]")
+
+cat.code
+cat.toCode("CQ")
+cat.head
+cat.type
+cat.keys
+
+val code: Int by cat.provider.int
+```
+
+```kotlin
+val cat = buildCat("foo", "CAT") {
+    "key" - "value"
+    set("foo", "bar", false)
+    this["age"] = "18"
+    key("name") value "forte"
+}
+
+val catCode = buildCatLiteral("foo") {
+    "key" - "value"
+    set("foo", "bar", false)
+    this["age"] = "18"
+    key("name") value "forte"
+}
+```
+
+
+```kotlin
+@Serializable
+@SerialName("at") // or use @CatCodeTypeName("at")
+data class At(val code: Long, val name: String)
+
+fun sample() {
+    val at = At(123456L, "forte")
+    val catcode = CatCode.encodeToString(At.serializer(), at)
+    val newAt = CatCode.decodeFromString(At.serializer(), catcode)
+    
+    // ...
+}
+```
 
 ## LICENSE
 
