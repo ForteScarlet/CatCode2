@@ -1,7 +1,7 @@
 <div align="center">
     <img src="./.catcode2/logo.png" alt="catcode logo"/>
     <h3>
-        - 😺 CatCode 2 😺 -
+        - 😺 CatCode Ⅱ 😺 -
     </h3>
     <span>
         <a href="https://github.com/ForteScarlet/CatCode2" target="_blank">github</a>
@@ -27,7 +27,7 @@
 
 <div align="center">
     <h3>
-        猫猫码（Cat code），一个可爱的通用特殊码，CQ码的精神延续。
+        猫猫码（Cat Code），一个可爱的通用特殊码，CQ码的精神延续。
     </h3>
 </div>   
 
@@ -81,3 +81,7 @@
 前往 [序列化模块](catcode2-serialization) 获取更多信息。
 
 
+
+## LICENSE
+
+[MIT LICENSE](LICENSE).
