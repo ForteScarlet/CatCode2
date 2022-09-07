@@ -2,7 +2,7 @@ plugins {
     kotlin("multiplatform")
 }
 
-configMultiplatform(sharedLib = true, staticLib = false)
+configMultiplatform(sharedLib = true, staticLib = true)
 
 
 

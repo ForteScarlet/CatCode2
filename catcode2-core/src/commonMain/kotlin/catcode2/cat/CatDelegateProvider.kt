@@ -14,8 +14,8 @@ import kotlin.reflect.KProperty
  * [CatDelegateProvider] 是最基本的委托者，其提供 [String] 类型的属性委托。
  */
 @JvmInline
-public value class CatDelegateProvider(private val cat: Cat) {
-    internal inline operator fun get(key: String): String? = cat[key]
+public value class CatDelegateProvider(@PublishedApi internal val cat: Cat) {
+    public inline operator fun get(key: String): String? = cat[key]
 }
 
 // region non-null provider
