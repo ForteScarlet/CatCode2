@@ -51,6 +51,10 @@ fun Project.sharedLibsCopyTask() {
             include("**.so")
             // macos
             include("**.dylib")
+            // staticLib
+            include("**.a")
+            include("**.lib")
+            
             rename { name ->
                 val removedPrefixName = name.removePrefix("lib")
                 if (removedPrefixName.endsWith(".h")) {
