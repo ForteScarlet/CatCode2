@@ -122,3 +122,37 @@ int main() {
 ```
 [CAT:foo,name=forte,age=18]
 ```
+
+或者直接构建字符串？
+
+```cpp
+int main() {
+    // 入口点
+    catcode2_core_ExportedSymbols *catcodeSymbols = catcode2_core_symbols();
+
+    const catcode2_core_kref_catcode2_cat_CatCodeLiteralBuilder_Companion &catCodeBuilderInstance = catcodeSymbols->kotlin.root.catcode2.cat.CatCodeLiteralBuilder.Companion._instance();
+    const catcode2_core_kref_catcode2_cat_CatCodeLiteralBuilder &builder = catcodeSymbols->kotlin.root.catcode2.cat.CatCodeLiteralBuilder.Companion.of(
+            catCodeBuilderInstance, "foo", "CAT");
+
+    catcodeSymbols->kotlin.root.catcode2.cat.CatCodeLiteralBuilder.set(builder, "name", "forte", true);
+    catcodeSymbols->kotlin.root.catcode2.cat.CatCodeLiteralBuilder.set(builder, "age", "18", false);
+
+    const char *cat = catcodeSymbols->kotlin.root.catcode2.cat.CatCodeLiteralBuilder.build(
+            builder);
+
+    printf("code = %s", cat);
+
+    catcodeSymbols->DisposeString(cat;
+    catcodeSymbols->DisposeStablePointer(builder.pinned);
+    catcodeSymbols->DisposeStablePointer(catCodeBuilderInstance.pinned);
+
+    return 0;
+}
+
+```
+
+输出：
+
+```
+[CAT:foo,name=forte,age=18]
+```
