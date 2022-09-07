@@ -18,7 +18,10 @@ private class LiteralCat(
     private val headCoordinate: IntRange,
     override val type: String,
     private val properties: Map<String, String>,
+    private val _keys: Array<String>,
+    private val _values: Array<String>,
 ) : Cat {
+    
     override fun toString(): String = literal
     
     override fun toCode(head: String?): String {
@@ -36,7 +39,26 @@ private class LiteralCat(
     override fun get(key: String): String? = properties[key]
     
     override val keys: Set<String>
-        get() = properties.keys
+        get() = _keys.toSet()
+    
+    override val size: Int
+        get() = properties.size
+    
+    override fun keyAt(index: Int): String {
+        return _keys[index]
+    }
+    
+    override fun keyAtOrNull(index: Int): String? {
+        return if (index in _keys.indices) keyAt(index) else null
+    }
+    
+    override fun valueAt(index: Int): String {
+        return _values[index]
+    }
+    
+    override fun valueAtOrNull(index: Int): String? {
+        return if (index in _values.indices) valueAt(index) else null
+    }
     
     override fun equals(other: Any?): Boolean {
         if (other !is Cat) return false
@@ -75,7 +97,10 @@ public fun catOf(codeValue: String): Cat {
     lateinit var head: String
     lateinit var headCoordinate: IntRange
     lateinit var type: String
-    val properties = buildMap {
+    
+    val properties = LinkedHashMap<String, String>()
+    
+    properties.apply {
         walkCatCodeInternal(
             codeValue,
             { s, e ->
@@ -96,7 +121,22 @@ public fun catOf(codeValue: String): Cat {
         )
     }
     
-    return LiteralCat(codeValue, head, headCoordinate, type, properties)
+    val keyArray = arrayOfNulls<String>(properties.size)
+    val valueArray = arrayOfNulls<String>(properties.size)
+    
+    properties.includeToArrays(keyArray, valueArray)
+    
+    
+    @Suppress("UNCHECKED_CAST")
+    return LiteralCat(
+        codeValue,
+        head,
+        headCoordinate,
+        type,
+        properties,
+        keyArray as Array<String>,
+        valueArray as Array<String>
+    )
 }
 
 /**
@@ -258,11 +298,29 @@ private fun catOfBuilder(
         append(CAT_SUFFIX)
     }
     
+    val keyArray = arrayOfNulls<String>(properties.size)
+    val valueArray = arrayOfNulls<String>(properties.size)
+    
+    
+    properties.includeToArrays(keyArray, valueArray)
+    
+    @Suppress("UNCHECKED_CAST")
     return LiteralCat(
         catcode,
         head,
         headCoordinate,
         type,
-        properties.toMap()
+        properties.toMap(),
+        keyArray as Array<String>,
+        valueArray as Array<String>
     )
+}
+
+private fun <K, V> Map<K, V>.includeToArrays(keyArray: Array<K?>, valueArray: Array<V?>) {
+    var index = 0
+    forEach { (k, v) ->
+        keyArray[index] = k
+        valueArray[index] = v
+        index++
+    }
 }
