@@ -23,15 +23,15 @@ if (isPublishConfigurable) {
     }
     
     publishing {
-        publications {
-            repositories {
-                mavenLocal()
-                if (project.version.toString().contains("SNAPSHOT", true)) {
-                    configPublishMaven(Sonatype.Snapshot, sonatypeUsername, sonatypePassword)
-                } else {
-                    configPublishMaven(Sonatype.Central, sonatypeUsername, sonatypePassword)
-                }
+        repositories {
+            mavenLocal()
+            if (project.version.toString().contains("SNAPSHOT", true)) {
+                configPublishMaven(Sonatype.Snapshot, sonatypeUsername, sonatypePassword)
+            } else {
+                configPublishMaven(Sonatype.Central, sonatypeUsername, sonatypePassword)
             }
+        }
+        publications {
             
             configureEach {
                 if (this !is MavenPublication) {
