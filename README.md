@@ -76,14 +76,18 @@
 
 [核心库](catcode2-core) 提供了针对猫猫码字符串的解析、读写与封装的核心基础功能，是最主要也是最基本的模块。
 
-前往 [核心库模块](catcode2-core) 获取更多信息。
+> **Note**
+> 
+> 👉 **前往 [核心库模块](catcode2-core) 获取更多信息。**
 
 ### [序列化库](catcode2-serialization)
 
 **CatCode2** 提供了一些允许通过实体类作为载体来对猫猫码进行描述的模块，
 例如对 [**kotlinx-serialization**](https://github.com/Kotlin/kotlinx.serialization) 的实现。
 
-前往 [序列化模块](catcode2-serialization) 获取更多信息。
+> **Note**
+> 
+> 👉 **前往 [序列化模块](catcode2-serialization) 获取更多信息。**
 
 
 ## 速览
